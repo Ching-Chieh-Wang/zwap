@@ -1,0 +1,30 @@
+CREATE DATABASE IF NOT EXISTS productdb;
+USE productdb;
+
+CREATE TABLE products (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_id VARCHAR(255) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  image_path VARCHAR(512),
+  price DECIMAL(10, 2) NOT NULL,
+  quantity INT DEFAULT 1,
+  available_quantity INT DEFAULT 1,
+  status VARCHAR(50) DEFAULT 'ACTIVE',
+  expired_at DATETIME GENERATED ALWAYS AS (DATE_ADD(created_at, INTERVAL 3 MONTH)) STORED,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  city VARCHAR(255),
+  location_name VARCHAR(255),
+  address VARCHAR(255),
+  latitude DECIMAL(9,6),
+  longitude DECIMAL(9,6),
+  place_id VARCHAR(255),
+  view_cnt INT DEFAULT 0
+)
+PARTITION BY LIST COLUMNS(status) (
+  PARTITION p_active VALUES IN ('ACTIVE'),
+  PARTITION p_deleted VALUES IN ('DELETED'),
+  PARTITION p_hidden VALUES IN ('HIDDEN'),
+  PARTITION p_expired VALUES IN ('EXPIRED')
+);
