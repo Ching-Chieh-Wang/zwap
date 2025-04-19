@@ -1,57 +1,51 @@
 services:
   mysql:
     image: mysql:8.3.0
-    container_name: product-mysql
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=debezium
     ports:
       - "3306:3306"
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpass
-      MYSQL_DATABASE: productdb
-      MYSQL_USER: debezium
-      MYSQL_PASSWORD: dbz
     volumes:
-      - mysql_data:/var/lib/mysql
       - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
       - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
-  zookeeper:
-    image: quay.io/debezium/zookeeper:2.5
-    ports: [ "2181:2181" ]
 
-  kafka:
-    image: quay.io/debezium/kafka:2.5
-    ports: [ "9092:9092" ]
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
     environment:
-      ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: broker
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
   connect:
-    image: quay.io/debezium/connect:2.5
+    image: quay.io/debezium/connect:2.0
     ports: [ "8083:8083" ]
     environment:
-      BOOTSTRAP_SERVERS: kafka:9092
-      GROUP_ID: 1
-      CONFIG_STORAGE_TOPIC: my_connect_configs
-      OFFSET_STORAGE_TOPIC: my_connect_offsets
-      STATUS_STORAGE_TOPIC: my_connect_statuses
-      KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-      VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
-      CONNECT_REST_ADVERTISED_HOST_NAME: connect
-      CONNECT_PLUGIN_PATH: /kafka/connect,/kafka/connect/debezium-connector-mysql
-    volumes:
-      - ./debezium:/debezium
-    entrypoint: [
-      "bash", "-c",
-      "connect-standalone /kafka/config/connect-standalone.properties & \
-       while ! curl -s http://localhost:8083/; do sleep 2; done && \
-       curl -X POST -H 'Content-Type: application/json' --data '@/debezium/mysql-connector.json' http://localhost:8083/connectors"
-    ]
+      - BOOTSTRAP_SERVERS=broker:29092
+      - GROUP_ID=1
+      - CONFIG_STORAGE_TOPIC=my_connect_configs
+      - OFFSET_STORAGE_TOPIC=my_connect_offsets
+      - STATUS_STORAGE_TOPIC=my_connect_statuses
     depends_on:
-      - kafka
+      - broker
       - zookeeper
-      - mysql
 
-volumes:
-  mysql_data:
+

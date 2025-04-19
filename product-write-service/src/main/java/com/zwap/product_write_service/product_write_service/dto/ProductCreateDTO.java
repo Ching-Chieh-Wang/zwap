@@ -1,4 +1,4 @@
-package com.zwap.product_service.product_service.dto;
+package com.zwap.product_write_service.product_write_service.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,12 +13,6 @@ public class ProductCreateDTO {
     private String imagePath;
     private BigDecimal price;
     private Integer quantity;
-    private String status;
-    private Integer viewCnt;
-    private LocalDateTime expiredAt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
     private String city;
     private String locationName;
     private String address;

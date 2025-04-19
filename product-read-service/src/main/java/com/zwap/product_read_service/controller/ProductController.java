@@ -12,6 +12,6 @@ public class ProductController {
 
     @GetMapping("/search")
     public ProductSearchResponseDTO searchProduct(@RequestBody ProductSearchDTO productSearchDTO) {
-
+        
     }
 }

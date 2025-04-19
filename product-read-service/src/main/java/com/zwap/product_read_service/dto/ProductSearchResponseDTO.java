@@ -4,6 +4,6 @@ import java.util.List;
 
 public class ProductSearchResponseDTO {
     private long total;
-    private List<ProductDTO> products;
+    private List<ProductSearchDTO> products;
 
 }

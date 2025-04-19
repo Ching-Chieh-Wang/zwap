@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "products") // Note: Consider table partitioning strategy
+@Table(name = "products")
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +24,10 @@ public class Product {
     private BigDecimal price;
     private Integer quantity;
     private Integer availableQuantity;
-    private String status;
+    @Column(nullable = false)
+    private String status= "ACTIVE";
 
+    @Column(insertable = false, updatable = false)
     private LocalDateTime expiredAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

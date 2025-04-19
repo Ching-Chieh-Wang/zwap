@@ -1,4 +1,4 @@
-package com.zwap.product_service.product_service.dto;
+package com.zwap.product_write_service.product_write_service.dto;
 
 import lombok.Data;
 
