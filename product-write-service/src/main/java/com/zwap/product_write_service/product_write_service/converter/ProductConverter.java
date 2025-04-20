@@ -1,6 +1,6 @@
 package com.zwap.product_write_service.product_write_service.converter;
 
-import com.zwap.common.common.entity.Product;
+import com.zwap.product_common.product_common.entity.Product;
 import com.zwap.product_write_service.product_write_service.dto.ProductCreateDTO;
 import org.springframework.stereotype.Component;
 

@@ -1,14 +1,29 @@
 services:
-  mysql:
-    image: mysql:8.3.0
-    container_name: mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=debezium
+  mongodb1:
+    image: mongo:6.0
+    container_name: mongodb1
     ports:
-      - "3306:3306"
+      - "27017:27017"
+    command: ["--replSet", "product-db", "--keyFile", "/etc/mongo-keyfile"]
     volumes:
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./mysql/custom.cnf:/etc/mysql/conf.d/custom.cnf
+      - mongodb_data1:/data/db
+      - ./docker/mongo-keyfile:/etc/mongo-keyfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  mongodb2:
+    image: mongo:6.0
+    container_name: mongodb2
+    ports:
+      - "27018:27017"
+    command: ["--replSet", "product-db", "--keyFile", "/etc/mongo-keyfile"]
+    volumes:
+      - mongodb_data2:/data/db
+      - ./docker/mongo-keyfile:/etc/mongo-keyfile
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
@@ -48,4 +63,21 @@ services:
       - broker
       - zookeeper
 
+  mongo-init:
+    image: mongo:6.0
+    depends_on:
+      - mongodb1
+      - mongodb2
+    volumes:
+      - ./docker/init-replica.js:/init-replica.js
+      - ./docker/setup-product-mongodb-replica.sh:/setup.sh
+    entrypoint: >
+      bash -c "
+        echo 'Waiting for MongoDB containers to be ready...';
+        sleep 10;
+        bash /setup.sh
+      "
 
+volumes:
+  mongodb_data1:
+  mongodb_data2:

@@ -1,7 +1,9 @@
-package com.zwap.common.common.entity;
+package com.zwap.product_common.product_common.entity;
 
-import com.zwap.common.common.VO.GeoData;
-import jakarta.persistence.*;
+import com.zwap.product_common.product_common.VO.GeoData;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,12 +12,10 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@Entity
-@Table(name = "products")
+@Document(collection = "products")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     private String userId;
     private String title;
@@ -24,10 +24,8 @@ public class Product {
     private BigDecimal price;
     private Integer quantity;
     private Integer availableQuantity;
-    @Column(nullable = false)
     private String status= "ACTIVE";
 
-    @Column(insertable = false, updatable = false)
     private LocalDateTime expiredAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -1,8 +1,8 @@
 package com.zwap.product_write_service.product_write_service.dto;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import com.zwap.common.common.VO.GeoData;
+
+import com.zwap.product_common.product_common.VO.GeoData;
 import lombok.Data;
 
 @Data
