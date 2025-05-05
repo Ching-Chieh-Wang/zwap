@@ -11,6 +11,6 @@ RUN mvn dependency:go-offline
 
 COPY src ./src
 
-RUN mvn clean install
+RUN mvn clean package
 
-CMD ["java", "-jar", "target/config-0.0.1-SNAPSHOT.jar"]
+CMD ["java", "-jar", "/app/target/config-0.0.1-SNAPSHOT.jar"]
