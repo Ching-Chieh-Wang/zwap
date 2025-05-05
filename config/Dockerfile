@@ -8,4 +8,4 @@ RUN ./mvnw dependency:go-offline
 
 COPY src ./src
 
-CMD ["./mvnw", "spring-boot:run"]
+CMD ["java", "-jar", "target/config-0.0.1-SNAPSHOT.jar"]
