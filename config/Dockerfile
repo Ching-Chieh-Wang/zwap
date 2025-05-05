@@ -1,19 +1,13 @@
-#
-# Build stage
-#
-FROM eclipse-temurin:17-jdk-jammy AS build
-ENV HOME=/usr/app
-RUN mkdir -p $HOME
-WORKDIR $HOME
-ADD . $HOME
-RUN --mount=type=cache,target=/root/.m2 mvn -f $HOME/pom.xml clean package -DskipTests
+FROM eclipse-temurin:17-jdk-jammy AS builder
+WORKDIR /opt/app
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+RUN ./mvnw dependency:go-offline
+COPY ./src ./src
+RUN ./mvnw clean install
 
-#
-# Package stage
-#
 FROM eclipse-temurin:17-jre-jammy
-LABEL name="eureka-service"
-ARG JAR_FILE=/usr/app/target/*.jar
-COPY --from=build $JAR_FILE /app/runner.jar
+WORKDIR /opt/app
 EXPOSE 8080
-ENTRYPOINT java -jar /app/runner.jar
+COPY --from=builder /opt/app/target/*.jar /opt/app/app.jar
+ENTRYPOINT ["java", "-jar", "/opt/app/app.jar"]
