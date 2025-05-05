@@ -5,7 +5,8 @@ FROM maven:3.9.4-eclipse-temurin-17 AS build
 ENV HOME=/usr/app
 RUN mkdir -p $HOME
 WORKDIR $HOME
-COPY . $HOME
+COPY pom.xml $HOME/
+COPY src $HOME/src
 RUN --mount=type=cache,target=/root/.m2 mvn -f $HOME/pom.xml clean package
 
 #
