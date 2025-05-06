@@ -3,6 +3,7 @@ FROM maven:3.9.4-eclipse-temurin-17 AS build
 WORKDIR /app
 COPY . .
 RUN mvn clean package -DskipTests
+RUN unzip -l target/config-0.0.1-SNAPSHOT.jar | tee jar-contents.txt
 RUN ls -lh target/
 
 # ---- Run stage ----
