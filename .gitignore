@@ -36,6 +36,6 @@ bootstrap.properties
 # Environment
 .env
 .env.*
-env.*
+env.properties
 *.local.yml
 *.local.properties
