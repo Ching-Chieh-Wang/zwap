@@ -3,7 +3,7 @@ server:
 
 spring:
   config:
-    import: classpath:env.properties
+    import: optional:classpath:env.properties
   application:
     name: config-server
 
