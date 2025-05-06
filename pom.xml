@@ -13,6 +13,7 @@
         <module>eureka-service</module>
         <module>product-read-service</module>
         <module>product-write-service</module>
+        <module>config</module>
         <module>product-common</module> <!-- Add this if not already created -->
     </modules>
 
