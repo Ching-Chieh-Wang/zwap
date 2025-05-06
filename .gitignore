@@ -24,7 +24,6 @@ Thumbs.db
 # Maven / Gradle
 /target/
 build/
-!gradle/wrapper/gradle-wrapper.jar
 .gradle/
 .mvn/
 mvnw
