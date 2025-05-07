@@ -14,3 +14,10 @@ spring:
           uri: ${CONFIG_REPO_URI}
           skipSslValidation: true
           clone-on-start: true
+
+eureka:
+  instance:
+    lease-renewal-interval-in-seconds: 30
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}
