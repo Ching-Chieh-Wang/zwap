@@ -11,6 +11,7 @@ spring:
           metadata:
             user.name: ${SPRING_SECURITY_USERNAME}
             user.password: ${SPRING_SECURITY_PASSWORD}
+          service-host-type: ip
   application:
     name: config-server
 
