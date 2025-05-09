@@ -1,11 +1,14 @@
 package com.zwap.eureka_service.eureka_service.Config;
 
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+
 
 @Configuration
 @EnableWebSecurity
@@ -18,21 +21,22 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 // 1) public endpoints
+
+// …
                 .authorizeHttpRequests(auth -> auth
-
-                        // static assets, login/logout pages must be open
-                        .requestMatchers(
-                                "/css/**", "/js/**", "/images/**",
-                                "/webjars/**",
-                                "/admin/assets/**",
-                                "/admin/login", "/admin/logout",
-                                "/eureka/**",
-                                "/actuator/**"
-                        ).permitAll()
-
-                        // everything else—including /, /admin/**, /eureka/**, /actuator/**—requires auth
-                        .anyRequest().authenticated()
-                )
+                .requestMatchers(
+                        new AntPathRequestMatcher("/css/**"),
+                        new AntPathRequestMatcher("/js/**"),
+                        new AntPathRequestMatcher("/images/**"),
+                        new AntPathRequestMatcher("/webjars/**"),
+                        new AntPathRequestMatcher("/admin/assets/**"),
+                        new AntPathRequestMatcher("/admin/login"),
+                        new AntPathRequestMatcher("/admin/logout"),
+                        new AntPathRequestMatcher("/eureka/**"),
+                        new AntPathRequestMatcher("/actuator/**")
+                ).permitAll()
+                .anyRequest().authenticated()
+        )
 
                 // 2) form login + basic auth
                 .formLogin(form -> form
