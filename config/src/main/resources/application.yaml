@@ -7,6 +7,10 @@ spring:
         url: ${SERVER_URL}/admin
         username: ${SPRING_SECURITY_USERNAME}
         password: ${SPRING_SECURITY_PASSWORD}
+        instance:
+          metadata:
+            user.name: ${SPRING_SECURITY_USERNAME}
+            user.password: ${SPRING_SECURITY_PASSWORD}
   application:
     name: config-server
 
