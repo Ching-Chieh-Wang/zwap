@@ -25,13 +25,7 @@ public class SecurityConfig {
 // …
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                        new AntPathRequestMatcher("/css/**"),
-                        new AntPathRequestMatcher("/js/**"),
-                        new AntPathRequestMatcher("/images/**"),
-                        new AntPathRequestMatcher("/webjars/**"),
-                        new AntPathRequestMatcher("/admin/assets/**"),
-                        new AntPathRequestMatcher("/admin/login"),
-                        new AntPathRequestMatcher("/admin/logout"),
+                        new AntPathRequestMatcher("/admin/**"),
                         new AntPathRequestMatcher("/eureka/**"),
                         new AntPathRequestMatcher("/actuator/**")
                 ).permitAll()
