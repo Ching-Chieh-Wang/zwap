@@ -1,5 +1,0 @@
-CONFIG_SERVER_URI=https://zwap-config.onrender.com/
-EUREKA_SERVER_URL=https://jingjie:xiuxiulovejingjie@zwap-eureka-service.onrender.com/eureka
-SERVER_URI=https://zwap-eureka-service.onrender.com/
-EUREKA_SERVER_USERNAME=jingjie
-EUREKA_SERVER_PASSWORD=xiuxiulovejingjie
