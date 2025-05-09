@@ -5,11 +5,9 @@ spring:
   boot:
     admin:
       client:
-        url: ${SPRING_ADMIN_URL}
+        url: ${EUREKA_SERVER_URL}
         username: ${EUREKA_SERVER_USERNAME}
         password: ${EUREKA_SERVER_PASSWORD}
-  config:
-    import: optional:classpath:.env
   application:
     name: config-server
 
@@ -31,8 +29,6 @@ management:
       show-details: always
 
 eureka:
-  instance:
-    lease-renewal-interval-in-seconds: 30
   client:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL}
