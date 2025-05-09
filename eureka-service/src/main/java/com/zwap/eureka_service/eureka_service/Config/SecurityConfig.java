@@ -26,7 +26,8 @@ public class SecurityConfig {
                                 "/webjars/**",
                                 "/admin/assets/**",
                                 "/admin/login", "/admin/logout",
-                                "/eureka/**"
+                                "/eureka/**",
+                                "/actuator/**"
                         ).permitAll()
 
                         // everything else—including /, /admin/**, /eureka/**, /actuator/**—requires auth
