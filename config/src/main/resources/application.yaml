@@ -1,18 +1,19 @@
 server:
   port: 8888
-
 spring:
   boot:
     admin:
       client:
-        url: ${EUREKA_SERVER_URL}/admin
-        username: ${EUREKA_SERVER_USERNAME}
-        password: ${EUREKA_SERVER_PASSWORD}
+        url: ${SERVER_URL}/admin
+        username: ${SPRING_SECURITY_USERNAME}
+        password: ${SPRING_SECURITY_PASSWORD}
   application:
     name: config-server
 
   cloud:
     config:
+      username: ${SPRING_SECURITY_USERNAME}
+      password: ${SPRING_SECURITY_PASSWORD}
       server:
         git:
           uri: ${CONFIG_REPO_URI}
