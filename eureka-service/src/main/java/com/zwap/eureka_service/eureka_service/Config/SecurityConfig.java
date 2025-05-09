@@ -19,13 +19,16 @@ public class SecurityConfig {
 
                 // 1) public endpoints
                 .authorizeHttpRequests(auth -> auth
+
                         // static assets, login/logout pages must be open
                         .requestMatchers(
                                 "/css/**", "/js/**", "/images/**",
                                 "/webjars/**",
                                 "/admin/assets/**",
-                                "/admin/login", "/admin/logout"
+                                "/admin/login", "/admin/logout",
+                                "/eureka/**"
                         ).permitAll()
+
                         // everything else—including /, /admin/**, /eureka/**, /actuator/**—requires auth
                         .anyRequest().authenticated()
                 )
