@@ -18,7 +18,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // you can keep CSRF on if you want formLogin + logout to work securely
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers(
+                                new AntPathRequestMatcher("/admin/**")
+                        )
+                )
 
                 // 1) public endpoints
 
