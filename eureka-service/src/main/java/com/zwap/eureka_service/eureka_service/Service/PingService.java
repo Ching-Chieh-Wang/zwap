@@ -1,4 +1,4 @@
-package com.zwap.config.service;
+package com.zwap.eureka_service.eureka_service.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +17,7 @@ public class PingService {
     @Value("${zwap.ping.clients}")
     private List<String> clientUrls;
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 600000)
     public void pingClients() {
         for (String url : clientUrls) {
             try {

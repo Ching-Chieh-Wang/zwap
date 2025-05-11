@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableConfigServer
-@EnableScheduling
 public class ConfigApplication {
 
 	public static void main(String[] args) {
