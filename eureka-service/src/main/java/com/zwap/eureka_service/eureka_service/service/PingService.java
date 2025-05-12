@@ -1,25 +1,23 @@
 package com.zwap.eureka_service.eureka_service.service;
 
+import com.zwap.eureka_service.eureka_service.properties.PingProperties;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class PingService {
 
+    private final PingProperties pingProperties;
     private final RestTemplate restTemplate = new RestTemplate();
-
-    @Value("${zwap.ping.clients}")
-    private List<String> clientUrls;
 
     @Scheduled(fixedRate = 600000)
     public void pingClients() {
-        for (String url : clientUrls) {
+        for (String url : pingProperties.getClients()) {
             try {
                 restTemplate.postForEntity(url, null, String.class);
                 log.info("Successfully pinged {}", url);

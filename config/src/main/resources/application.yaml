@@ -22,6 +22,8 @@ spring:
       server:
         git:
           uri: ${CONFIG_REPO_URI}
+          username: ${GITHUB_USERNAME}
+          password: ${GITHUB_TOKEN}
           skipSslValidation: true
           clone-on-start: true
 
@@ -33,9 +35,3 @@ management:
   endpoint:
     health:
       show-details: ALWAYS
-
-zwap:
-  ping:
-    clients:
-      - https://zwap-config.onrender.com/
-      - https://zwap-api-gateway.onrender.com/
