@@ -1,4 +1,4 @@
-package com.zwap.eureka_service.eureka_service.Config;
+package com.zwap.eureka_service.eureka_service.config;
 
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 

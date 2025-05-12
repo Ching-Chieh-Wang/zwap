@@ -1,4 +1,4 @@
-package com.zwap.eureka_service.eureka_service.Service;
+package com.zwap.eureka_service.eureka_service.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
