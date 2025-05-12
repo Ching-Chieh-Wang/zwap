@@ -27,6 +27,12 @@ spring:
           skipSslValidation: true
           clone-on-start: true
 
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: ${SERVER_URL}/eureka
 management:
   endpoints:
     web:
