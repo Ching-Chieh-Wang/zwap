@@ -1,24 +1,10 @@
 server:
   port: 8888
 spring:
-  boot:
-    admin:
-      client:
-        url: ${SERVER_URL}/admin
-        username: ${SPRING_SECURITY_USERNAME}
-        password: ${SPRING_SECURITY_PASSWORD}
-        instance:
-          metadata:
-            user.name: ${SPRING_SECURITY_USERNAME}
-            user.password: ${SPRING_SECURITY_PASSWORD}
-          service-host-type: ip
   application:
     name: config-server
-
   cloud:
     config:
-      username: ${SPRING_SECURITY_USERNAME}
-      password: ${SPRING_SECURITY_PASSWORD}
       server:
         git:
           uri: ${CONFIG_REPO_URI}
@@ -26,18 +12,9 @@ spring:
           password: ${GITHUB_TOKEN}
           skipSslValidation: true
           clone-on-start: true
-
 eureka:
   client:
     register-with-eureka: true
     fetch-registry: true
     service-url:
       defaultZone: ${SERVER_URL}/eureka
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  endpoint:
-    health:
-      show-details: ALWAYS
