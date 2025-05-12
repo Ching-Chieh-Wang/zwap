@@ -1,6 +1,5 @@
 package com.zwap.eureka_service.eureka_service.service;
 
-import com.zwap.eureka_service.eureka_service.properties.PingProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.client.ServiceInstance;
