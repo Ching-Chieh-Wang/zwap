@@ -22,6 +22,8 @@ public class PingService {
     public void pingClients() {
         List<String> services = discoveryClient.getServices();
         for (String service : services) {
+            // Skip pinging the eureka-service itself
+            if ("eureka-service".equalsIgnoreCase(service)) continue;
             List<ServiceInstance> instances = discoveryClient.getInstances(service);
             for (ServiceInstance instance : instances) {
                 String url = instance.getUri().toString();
