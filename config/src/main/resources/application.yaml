@@ -23,6 +23,8 @@ eureka:
     hostname: ${SERVER_HOST}
     secure-port-enabled: true
     non-secure-port-enabled: false
+    secure-port: 443
+    non-secure-port: 80
     home-page-url: https://${SERVER_HOST}
     health-check-url: https://${SERVER_HOST}/actuator/health
     status-page-url: https://${SERVER_HOST}/actuator/info
