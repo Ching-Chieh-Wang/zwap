@@ -7,7 +7,7 @@ spring:
     config:
       server:
         git:
-          uri: ${CONFIG_REPO_URI}
+          uri: ${CONFIG_REPO_URL}
           username: ${GITHUB_USERNAME}
           password: ${GITHUB_TOKEN}
           skipSslValidation: true
@@ -17,7 +17,7 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     service-url:
-      defaultZone: ${SERVER_URL}/eureka
+      defaultZone: ${EUREKA_SERVER_URL}/eureka
   instance:
     prefer-ip-address: false
     hostname:
