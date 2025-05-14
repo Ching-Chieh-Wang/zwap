@@ -1,0 +1,13 @@
+FROM bitnami/kafka:latest
+
+ENV KAFKA_CFG_NODE_ID=2
+ENV KAFKA_KRAFT_CLUSTER_ID=kraft-cluster-id-123
+ENV KAFKA_CFG_PROCESS_ROLES=broker,controller
+ENV KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+ENV KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+ENV KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://zwap-product-kafka-2.onrender.com:9092
+ENV KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@zwap-product-kafka-1.onrender.com:9093,2@zwap-product-kafka-2.onrender.com:9093,3@zwap-product-kafka-3.onrender.com:9093
+ENV KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
+ENV ALLOW_PLAINTEXT_LISTENER=yes
+
+CMD ["kafka-server-start.sh", "/opt/bitnami/kafka/config/kraft/server.properties"]
