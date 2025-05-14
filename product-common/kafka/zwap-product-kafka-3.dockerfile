@@ -9,5 +9,3 @@ ENV KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://zwap-product-kafka-3.onrender.com
 ENV KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@zwap-product-kafka-1.onrender.com:9093,2@zwap-product-kafka-2.onrender.com:9093,3@zwap-product-kafka-3.onrender.com:9093
 ENV KAFKA_CFG_LOG_DIRS=/bitnami/kafka/data
 ENV ALLOW_PLAINTEXT_LISTENER=yes
-
-CMD ["kafka-server-start.sh", "/opt/bitnami/kafka/config/kraft/server.properties"]
