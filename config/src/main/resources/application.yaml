@@ -20,8 +20,9 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL}/eureka
   instance:
     prefer-ip-address: false
+    hostname: ${SERVER_HOST}
     secure-port-enabled: true
     non-secure-port-enabled: false
-    home-page-url: ${SERVER_URL}
-    health-check-url: ${SERVER_URL}/actuator/health
-    status-page-url: ${SERVER_URL}/actuator/info
+    home-page-url: https://${SERVER_HOST}
+    health-check-url: https://${SERVER_HOST}/actuator/health
+    status-page-url: https://${SERVER_HOST}/actuator/info
