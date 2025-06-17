@@ -1,0 +1,14 @@
+Configuration:
+  status: WARN
+  name: ConsoleOnly
+  Appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "[%d{ISO8601}] %p %m (%c)%n"
+  Loggers:
+    Root:
+      level: INFO
+      AppenderRef:
+        - ref: STDOUT

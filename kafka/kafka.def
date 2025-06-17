@@ -1,0 +1,16 @@
+Bootstrap: docker
+From: bitnami/kafka:latest
+
+%files
+    config/kraft-broker.properties /opt/kafka/config/kraft-broker.properties
+
+%post
+    mkdir -p /opt/kafka/logs /opt/kafka/meta
+
+%environment
+    export KAFKA_CFG_NODE_ID=1
+    export KAFKA_CFG_PROCESS_ROLES="broker,controller"
+
+%runscript
+    echo "🚀 Starting Kafka broker..."
+    /opt/bitnami/kafka/bin/kafka-server-start.sh /opt/kafka/config/kraft-broker.properties
