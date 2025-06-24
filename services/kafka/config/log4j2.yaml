@@ -1,0 +1,13 @@
+Configuration:
+  status: WARN
+  appenders:
+    Console:
+      name: STDOUT
+      target: SYSTEM_OUT
+      PatternLayout:
+        pattern: "%d [%t] %-5p %c - %m%n"
+  loggers:
+    root:
+      level: info
+      AppenderRef:
+        - ref: STDOUT
