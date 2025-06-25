@@ -19,7 +19,7 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public ProductVO getById(@RequestParam("id") Long id, ProductSearchDTO productSearchDTO) {
+    public ProductVO getById(@RequestParam("id") String id, ProductSearchDTO productSearchDTO) {
         return new ProductVO();
     }
 }
