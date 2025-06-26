@@ -1,14 +1,22 @@
 pipeline {
     agent any
 
-    triggers {
-        githubPush()
-    }
-
     stages {
-        stage('Hello') {
+        stage('Remote Kafka Build') {
+            when {
+                changeset "**/services/kafka/**"
+            }
             steps {
-                echo 'Hello World'
+                sshagent(['linux085-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                        cd ~/services/kafka &&
+                        ./setup.sh &&
+                        ./bootstrap.sh &&
+                        ./run_kafka.sh
+                    '
+                    '''
+                }
             }
         }
     }
