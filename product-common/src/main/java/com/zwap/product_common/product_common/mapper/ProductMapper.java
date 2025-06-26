@@ -1,4 +1,4 @@
-package com.zwap.product_write_service.product_write_service.mapper;
+package com.zwap.product_common.product_common.mapper;
 
 import com.zwap.product_common.product_common.entity.Product;
 import org.springframework.data.mongodb.repository.MongoRepository;

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class ProductVO {
+    public static final ProductVO NOT_FOUND = new ProductVO();
     private String id;
     private String title;
     private String description;
