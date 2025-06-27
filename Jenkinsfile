@@ -10,7 +10,7 @@ pipeline {
                 sshagent(['linux085-ssh-key']) {
                     sh '''
                     ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
-                        cd ~/services/kafka &&
+                        cd services/kafka &&
                         ./setup.sh &&
                         ./bootstrap.sh &&
                         ./run_kafka.sh
