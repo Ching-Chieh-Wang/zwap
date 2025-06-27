@@ -1,58 +1,71 @@
 pipeline {
     agent any
 
-    stages {
-        stage('Trigger Check') {
-            when {
-                changeset "**/services/kafka/**"
-            }
-            steps {
-                echo 'Changes detected in services/kafka/'
-            }
-        }
+    environment {
+        REMOTE_KAFKA_HOST = "immactavish@linux-085"
+        REMOTE_CONNECTOR_HOST = "immactavish@linux-084"
+        REPO_URL = "https://github.com/Ching-Chieh-Wang/zwap.git"
+    }
 
-        stage('Clone or Update Repository') {
-            when {
-                changeset "**/services/kafka/**"
-            }
+    stages {
+        stage('Stop Kafka (085)') {
             steps {
                 sshagent(['linux085-ssh-key']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
-                        if [ -d "zwap/.git" ]; then
-                            cd zwap && git pull
-                        else
-                            git clone https://github.com/Ching-Chieh-Wang/zwap.git
-                        fi
+                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
+                        pkill -f run_kafka.sh || true
                     '
                     '''
                 }
             }
         }
 
-        stage('Provision .env') {
-            when {
-                changeset "**/services/kafka/**"
-            }
+        stage('Stop Connector (084)') {
             steps {
-                withCredentials([file(credentialsId: 'kafka-env-file', variable: 'ENVFILE')]) {
-                    sshagent(['linux085-ssh-key']) {
-                        sh '''
-                        scp -o StrictHostKeyChecking=no $ENVFILE immactavish@linux-085:~/zwap/services/kafka/.env
-                        '''
-                    }
+                sshagent(['linux084-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no $REMOTE_CONNECTOR_HOST '
+                        pkill -f run_connector.sh || true
+                    '
+                    '''
                 }
             }
         }
 
-        stage('Kafka Setup') {
-            when {
-                changeset "**/services/kafka/**"
-            }
+        stage('Clean Kafka Folder (085)') {
             steps {
                 sshagent(['linux085-ssh-key']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
+                        rm -rf zwap/services/kafka
+                    '
+                    '''
+                }
+            }
+        }
+
+        stage('Sparse Clone Kafka Folder (085)') {
+            steps {
+                sshagent(['linux085-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
+                        cd zwap || mkdir zwap && cd zwap &&
+                        git init &&
+                        git remote add origin $REPO_URL &&
+                        git config core.sparseCheckout true &&
+                        echo "services/kafka/" > .git/info/sparse-checkout &&
+                        git pull origin main
+                    '
+                    '''
+                }
+            }
+        }
+
+        stage('Kafka Setup (085)') {
+            steps {
+                sshagent(['linux085-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
                         cd zwap/services/kafka &&
                         ./setup.sh
                     '
@@ -61,32 +74,59 @@ pipeline {
             }
         }
 
-        stage('Kafka Bootstrap') {
-            when {
-                changeset "**/services/kafka/**"
-            }
+        stage('Kafka Bootstrap (085)') {
             steps {
                 sshagent(['linux085-ssh-key']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
                         cd zwap/services/kafka &&
-                        ./bootstrap.sh
+                        ./bootstrap.sh &
                     '
                     '''
                 }
             }
         }
 
-        stage('Kafka Run') {
-            when {
-                changeset "**/services/kafka/**"
+        stage('Run Connector (084)') {
+            steps {
+                sshagent(['linux084-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no $REMOTE_CONNECTOR_HOST '
+                        cd zwap/services/kafka &&
+                        ./run_connector.sh &
+                    '
+                    '''
+                }
             }
+        }
+
+        stage('Wait and Check Kafka (085)') {
             steps {
                 sshagent(['linux085-ssh-key']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
-                        cd zwap/services/kafka &&
-                        ./run_kafka.sh
+                    sleep 60
+                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
+                        if pgrep -f run_kafka.sh > /dev/null; then
+                            echo "Kafka is running."
+                        else
+                            echo "Kafka is NOT running." && exit 1
+                        fi
+                    '
+                    '''
+                }
+            }
+        }
+
+        stage('Wait and Check Connector (084)') {
+            steps {
+                sshagent(['linux084-ssh-key']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no $REMOTE_CONNECTOR_HOST '
+                        if pgrep -f run_connector.sh > /dev/null; then
+                            echo "Connector is running."
+                        else
+                            echo "Connector is NOT running." && exit 1
+                        fi
                     '
                     '''
                 }
