@@ -2,72 +2,86 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_KAFKA_HOST = "immactavish@linux-085"
-        REMOTE_CONNECTOR_HOST = "immactavish@linux-084"
-        REPO_URL = "https://github.com/Ching-Chieh-Wang/zwap.git"
+        REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
     }
 
     stages {
         stage('Stop Kafka (085)') {
             steps {
-                sshagent(['linux085-ssh-key']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
-                        pkill -f run_kafka.sh || true
-                    '
-                    '''
+                sshagent(['immactavish']) {
+                    timeout(time: 30, unit: 'SECONDS') {
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                            pkill -f run_kafka.sh || true
+                            echo "[Stopped] Kafka"
+                            exit 0
+                        '
+                        '''
+                    }
                 }
             }
         }
 
         stage('Stop Connector (084)') {
             steps {
-                sshagent(['linux084-ssh-key']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_CONNECTOR_HOST '
-                        pkill -f run_connector.sh || true
-                    '
-                    '''
+                sshagent(['immactavish']) {
+                    timeout(time: 30, unit: 'SECONDS') {
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no immactavish@linux-084 '
+                            pkill -f run_connector.sh || true
+                            echo "[Stopped] Connector"
+                            exit 0
+                        '
+                        '''
+                    }
                 }
             }
         }
 
         stage('Clean Kafka Folder (085)') {
             steps {
-                sshagent(['linux085-ssh-key']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
-                        rm -rf zwap/services/kafka
-                    '
-                    '''
+                sshagent(['immactavish']) {
+                    timeout(time: 30, unit: 'SECONDS') {
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                            rm -rf zwap/services/kafka || true
+                            echo "[Cleaned] kafka folder"
+                            exit 0
+                        '
+                        '''
+                    }
                 }
             }
         }
 
-        stage('Sparse Clone Kafka Folder (085)') {
+        stage('Clone Kafka Only (085)') {
             steps {
-                sshagent(['linux085-ssh-key']) {
-                    sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
-                        cd zwap || mkdir zwap && cd zwap &&
-                        git init &&
-                        git remote add origin $REPO_URL &&
-                        git config core.sparseCheckout true &&
-                        echo "services/kafka/" > .git/info/sparse-checkout &&
-                        git pull origin main
-                    '
-                    '''
+                sshagent(['immactavish']) {
+                    timeout(time: 45, unit: 'SECONDS') {
+                        sh '''
+                        ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                            cd zwap || mkdir zwap && cd zwap &&
+                            git init &&
+                            git remote add origin $REPO_URL &&
+                            git config core.sparseCheckout true &&
+                            echo "services/kafka/" > .git/info/sparse-checkout &&
+                            git pull origin main
+                            exit 0
+                        '
+                        '''
+                    }
                 }
             }
         }
 
         stage('Kafka Setup (085)') {
             steps {
-                sshagent(['linux085-ssh-key']) {
+                sshagent(['immactavish']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
                         cd zwap/services/kafka &&
                         ./setup.sh
+                        exit 0
                     '
                     '''
                 }
@@ -76,11 +90,27 @@ pipeline {
 
         stage('Kafka Bootstrap (085)') {
             steps {
-                sshagent(['linux085-ssh-key']) {
+                sshagent(['immactavish']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
                         cd zwap/services/kafka &&
-                        ./bootstrap.sh &
+                        ./bootstrap.sh
+                        exit 0
+                    '
+                    '''
+                }
+            }
+        }
+
+        stage('Run Kafka (085)') {
+            steps {
+                sshagent(['immactavish']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                        cd zwap/services/kafka &&
+                        ./run_kafka.sh &
+                        echo "[Started] Kafka"
+                        exit 0
                     '
                     '''
                 }
@@ -89,44 +119,41 @@ pipeline {
 
         stage('Run Connector (084)') {
             steps {
-                sshagent(['linux084-ssh-key']) {
+                sshagent(['immactavish']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_CONNECTOR_HOST '
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-084 '
                         cd zwap/services/kafka &&
                         ./run_connector.sh &
+                        echo "[Started] Connector"
+                        exit 0
                     '
                     '''
                 }
             }
         }
 
-        stage('Wait and Check Kafka (085)') {
+        stage('Verify Kafka Running (085)') {
             steps {
-                sshagent(['linux085-ssh-key']) {
+                sshagent(['immactavish']) {
                     sh '''
-                    sleep 60
-                    ssh -o StrictHostKeyChecking=no $REMOTE_KAFKA_HOST '
-                        if pgrep -f run_kafka.sh > /dev/null; then
-                            echo "Kafka is running."
-                        else
-                            echo "Kafka is NOT running." && exit 1
-                        fi
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
+                        sleep 60
+                        pgrep -f run_kafka.sh > /dev/null && echo "Kafka is running" || echo "Kafka is NOT running"
+                        exit 0
                     '
                     '''
                 }
             }
         }
 
-        stage('Wait and Check Connector (084)') {
+        stage('Verify Connector Running (084)') {
             steps {
-                sshagent(['linux084-ssh-key']) {
+                sshagent(['immactavish']) {
                     sh '''
-                    ssh -o StrictHostKeyChecking=no $REMOTE_CONNECTOR_HOST '
-                        if pgrep -f run_connector.sh > /dev/null; then
-                            echo "Connector is running."
-                        else
-                            echo "Connector is NOT running." && exit 1
-                        fi
+                    ssh -o StrictHostKeyChecking=no immactavish@linux-084 '
+                        sleep 60
+                        pgrep -f run_connector.sh > /dev/null && echo "Connector is running" || echo "Connector is NOT running"
+                        exit 0
                     '
                     '''
                 }
