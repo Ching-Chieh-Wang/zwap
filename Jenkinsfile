@@ -20,14 +20,27 @@ pipeline {
                     sh '''
                     ssh -o StrictHostKeyChecking=no immactavish@linux-085 '
                         if [ -d "zwap/.git" ]; then
-                            echo "Repo already exists. Pulling latest changes..."
                             cd zwap && git pull
                         else
-                            echo "Cloning repo..."
                             git clone https://github.com/Ching-Chieh-Wang/zwap.git
                         fi
                     '
                     '''
+                }
+            }
+        }
+
+        stage('Provision .env') {
+            when {
+                changeset "**/services/kafka/**"
+            }
+            steps {
+                withCredentials([file(credentialsId: 'kafka-env-file', variable: 'ENVFILE')]) {
+                    sshagent(['linux085-ssh-key']) {
+                        sh '''
+                        scp -o StrictHostKeyChecking=no $ENVFILE immactavish@linux-085:~/zwap/services/kafka/.env
+                        '''
+                    }
                 }
             }
         }
