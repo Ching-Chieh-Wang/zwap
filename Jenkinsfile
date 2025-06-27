@@ -16,152 +16,153 @@ pipeline {
         skipDefaultCheckout()
     }
 
-    // 🔒 Only trigger this pipeline if changes are in services/kafka
-    when {
-        changeset "services/kafka/**"
-    }
-
     stages {
-        stage('Stop Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        set +e
-                        pkill -f run_kafka.sh
-                        echo "[Kafka Stop] pkill exit code: \$?"
-                        exit 0
-                    ' || true
-                    """
-                }
+        stage('Kafka Pipeline (only if services/kafka changed)') {
+            when {
+                changeset "services/kafka/**"
             }
-        }
-
-        stage('Stop Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
-                        set +e
-                        pkill -f run_connector.sh
-                        echo "[Connector Stop] pkill exit code: \$?"
-                        exit 0
-                    ' || true
-                    """
+            stages {
+                stage('Stop Connector (084)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
+                                set +e
+                                pkill -f run_connector.sh
+                                echo "[Connector Stop] pkill exit code: \$?"
+                                exit 0
+                            ' || true
+                            """
+                        }
+                    }
                 }
-            }
-        }
-
-        stage('Clean Kafka Folder (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        rm -rf zwap/services/kafka
-                        exit 0
-                    '
-                    """
+                stage('Stop Kafka (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                set +e
+                                pkill -f run_kafka.sh
+                                echo "[Kafka Stop] pkill exit code: \$?"
+                                exit 0
+                            ' || true
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Sparse Clone Kafka Folder (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        cd zwap || mkdir zwap && cd zwap
-                        git init
-                        git remote add origin \$REPO_URL
-                        git config core.sparseCheckout true
-                        echo "services/kafka/" > .git/info/sparse-checkout
-                        git pull origin main
-                        exit 0
-                    '
-                    """
+                stage('Clean Kafka Folder (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                rm -rf zwap/services/kafka
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Setup Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        cd zwap/services/kafka
-                        ./setup.sh
-                        exit 0
-                    '
-                    """
+                stage('Sparse Clone Kafka Folder (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                cd zwap || mkdir zwap && cd zwap
+                                git init
+                                git remote add origin \$REPO_URL
+                                git config core.sparseCheckout true
+                                echo "services/kafka/" > .git/info/sparse-checkout
+                                git pull origin main
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Bootstrap Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        cd zwap/services/kafka
-                        ./bootstrap.sh
-                        exit 0
-                    '
-                    """
+                stage('Setup Kafka (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                cd zwap/services/kafka
+                                ./setup.sh
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Run Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        cd zwap/services/kafka
-                        nohup ./run_kafka.sh > kafka.log 2>&1 &
-                        exit 0
-                    '
-                    """
+                stage('Bootstrap Kafka (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                cd zwap/services/kafka
+                                ./bootstrap.sh
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Run Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
-                        cd zwap/services/kafka
-                        nohup ./run_connector.sh > connector.log 2>&1 &
-                        exit 0
-                    '
-                    """
+                stage('Run Kafka (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                cd zwap/services/kafka
+                                nohup ./run_kafka.sh > kafka.log 2>&1 &
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Verify Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    sleep 60
-                    ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        pgrep -f run_kafka.sh > /dev/null && echo "Kafka is running" || echo "Kafka is NOT running"
-                        exit 0
-                    '
-                    """
+                stage('Run Connector (084)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
+                                cd zwap/services/kafka
+                                nohup ./run_connector.sh > connector.log 2>&1 &
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
-            }
-        }
 
-        stage('Verify Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                    ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
-                        pgrep -f run_connector.sh > /dev/null && echo "Connector is running" || echo "Connector is NOT running"
-                        exit 0
-                    '
-                    """
+                stage('Verify Kafka (085)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            sleep 60
+                            ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                                pgrep -f run_kafka.sh > /dev/null && echo "Kafka is running" || echo "Kafka is NOT running"
+                                exit 0
+                            '
+                            """
+                        }
+                    }
+                }
+
+                stage('Verify Connector (084)') {
+                    steps {
+                        sshagent([env.SSH_KEY]) {
+                            sh """
+                            ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
+                                pgrep -f run_connector.sh > /dev/null && echo "Connector is running" || echo "Connector is NOT running"
+                                exit 0
+                            '
+                            """
+                        }
+                    }
                 }
             }
         }
