@@ -14,7 +14,7 @@ pipeline {
                 [key: 'changed_files', value: '$.commits[*].["modified","added","removed"][*]', expressionType: 'JSONPath'],
                 [key: 'ref', value: '$.ref', expressionType: 'JSONPath']
             ],
-            causeString: 'Triggered on $ref due to changes in: $changed_files',
+            causeString: 'Triggered on $ref $changed_files',
             token: 'xiuxiulovejingjie',
             printContributedVariables: true,
             printPostContent: true,
@@ -151,7 +151,14 @@ pipeline {
                     sh """
                     sleep 60
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        pgrep -f run_kafka.sh > /dev/null && echo "Kafka is running" || echo "Kafka is NOT running"
+                        nc -z localhost 50003
+                        if [ \$? -eq 0 ]; then
+                            echo "[Kafka Health] Kafka is running on port 50003"
+                            exit 0
+                        else
+                            echo "[Kafka Health] Kafka is NOT running on port 50003"
+                            exit 1
+                        fi
                         exit 0
                     '
                     """
@@ -164,8 +171,15 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
-                        pgrep -f run_connector.sh > /dev/null && echo "Connector is running" || echo "Connector is NOT running"
-                        exit 0
+                        nc -z localhost 50001
+                        if [ \$? -eq 0 ]; then
+                            echo "[Connector Health] Kafka Connect is running on port 50001"
+                            exit 0
+                        else
+                            echo "[Connector Health] Kafka Connect is NOT running on port 50001"
+                            exit 1
+                        fi
+                        
                     '
                     """
                 }
