@@ -11,11 +11,9 @@ pipeline {
     triggers {
         GenericTrigger(
             genericVariables: [
-                [key: 'changed_files', value: '$.commits[*].["modified","added","removed"][*]', expressionType: 'JSONPath'],
-                [key: 'ref', value: '$.ref', expressionType: 'JSONPath']
+                [key: 'changed_files', value: '$.commits[*].["modified","added","removed"][*]', expressionType: 'JSONPath']
             ],
-            causeString: 'Triggered on $ref $changed_files',
-            token: 'xiuxiulovejingjie',
+            causeString: 'GitHub Push detected. Changed: $changed_files',
             printContributedVariables: true,
             printPostContent: true,
             regexpFilterText: '$changed_files',
