@@ -87,12 +87,11 @@ pipeline {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                         set -e
+                        rm -rf ~/zwap
                         mkdir -p ~/zwap
                         cd ~/zwap
-        
-                        if [ ! -d .git ]; then
-                            git init -b main
-                        fi
+
+                        git init -b main
         
                         if git remote get-url origin >/dev/null 2>&1; then
                             git remote set-url origin ${REPO_URL}
