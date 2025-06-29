@@ -114,8 +114,10 @@ pipeline {
             steps {
                 sshagent([env.SSH_KEY]) {
                     withCredentials([file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE')]) {
-    sh(script: "scp -o StrictHostKeyChecking=no \"\$KAFKA_ENV_FILE\" \"${HOST_KAFKA}:~/zwap/services/kafka/.env\"", shell: '/bin/bash')
-}
+                        sh '''
+                            scp -o StrictHostKeyChecking=no "$KAFKA_ENV_FILE" "$HOST_KAFKA:~/zwap/services/kafka/.env"
+                        '''
+                    }
                 }
             }
         }
