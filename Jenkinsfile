@@ -78,19 +78,24 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        cd zwap || mkdir zwap && cd zwap
-                        git init
-                        git remote add origin \$REPO_URL
-                        git config core.sparseCheckout true
-                        git sparse-checkout init --cone
-                        git sparse-checkout set services/kafka/
+                        if [ ! -d zwap ]; then
+                            mkdir zwap
+                        fi
+                        cd zwap
+                        if [ ! -d .git ]; then
+                            git init
+                            git remote add origin \$REPO_URL
+                            git config core.sparseCheckout true
+                            git sparse-checkout init --cone
+                            git sparse-checkout set services/kafka/
+                        fi
                         git pull origin main
                         exit 0
                     '
                     """
                 }
             }
-        }    
+        }
 
         stage('Setup Kafka (085)') {
             steps {
