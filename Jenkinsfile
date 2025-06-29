@@ -81,14 +81,15 @@ triggers {
                         git init
                         git remote add origin \$REPO_URL
                         git config core.sparseCheckout true
-                        echo "services/kafka/" > .git/info/sparse-checkout
+                        git sparse-checkout init --cone
+                        git sparse-checkout set services/kafka
                         git pull origin main
                         exit 0
                     '
                     """
                 }
             }
-        }
+        }    
 
         stage('Setup Kafka (085)') {
             steps {
