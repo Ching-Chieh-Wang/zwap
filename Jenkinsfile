@@ -104,8 +104,6 @@ pipeline {
                         git sparse-checkout init --cone
                         git sparse-checkout set services/kafka
                         git pull origin main
-        
-                        echo "\$KAFKA_ENV" > services/kafka/.env
                     '
                     """
                 }
