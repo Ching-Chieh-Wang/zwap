@@ -84,7 +84,7 @@ pipeline {
         stage('Sparse Clone Kafka Folder (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh """Add commentMore actions
+                    sh """
                     ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                         set -e
                         mkdir -p ~/zwap
