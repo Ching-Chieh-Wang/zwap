@@ -8,19 +8,21 @@ pipeline {
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
     }
 
-    triggers {
-        GenericTrigger(
-            genericVariables: [
-                [key: 'changed_files', value: '$.commits[*].["modified","added","removed"][*]', expressionType: 'JSONPath']
-            ],
-            causeString: 'GitHub Push detected. Changed: $changed_files',
-            printContributedVariables: true,
-            token: 'xiuxiulovejingjie',
-            printPostContent: true,
-            regexpFilterText: '$changed_files',
-            regexpFilterExpression: 'services/kafka/.*'
-        )
-    }
+triggers {
+    GenericTrigger(
+        genericVariables: [
+            [key: 'modified_files', value: '$.commits[*].modified[*]', expressionType: 'JSONPath'],
+            [key: 'added_files', value: '$.commits[*].added[*]', expressionType: 'JSONPath'],
+            [key: 'removed_files', value: '$.commits[*].removed[*]', expressionType: 'JSONPath']
+        ],
+        causeString: 'Triggered on changes to: $modified_files $added_files $removed_files',
+        token: 'xiuxiulovejingjie',
+        printContributedVariables: true,
+        printPostContent: true,
+        regexpFilterText: '$modified_files $added_files $removed_files',
+        regexpFilterExpression: '^services/kafka/.*'
+    )
+}
 
     options {
         skipDefaultCheckout()
