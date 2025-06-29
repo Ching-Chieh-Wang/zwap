@@ -84,27 +84,29 @@ pipeline {
         stage('Sparse Clone Kafka Folder (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
-                            set -e
-                            mkdir -p ~/zwap
-                            cd ~/zwap
-
-                            if [ ! -d .git ]; then
-                                git init -b main
-                            fi
-
-                            if git remote get-url origin >/dev/null 2>&1; then
-                                git remote set-url origin ${REPO_URL}
-                            else
-                                git remote add origin ${REPO_URL}
-                            fi
-
-                            git config core.sparseCheckout true
-                            git sparse-checkout init --cone
-                            git sparse-checkout set services/kafka
-                            git pull origin main
-                        '
+                    sh """Add commentMore actions
+                    ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
+                        set -e
+                        mkdir -p ~/zwap
+                        cd ~/zwap
+        
+                        if [ ! -d .git ]; then
+                            git init -b main
+                        fi
+        
+                        if git remote get-url origin >/dev/null 2>&1; then
+                            git remote set-url origin ${REPO_URL}
+                        else
+                            git remote add origin ${REPO_URL}
+                        fi
+        
+                        git config core.sparseCheckout true
+                        git sparse-checkout init --cone
+                        git sparse-checkout set services/kafka
+                        git pull origin main
+        
+                        echo "\$KAFKA_ENV" > services/kafka/.env
+                    '
                     """
                 }
             }
