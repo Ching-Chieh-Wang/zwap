@@ -101,7 +101,7 @@ pipeline {
                         fi
         
                         git config core.sparseCheckout true
-                        git sparse-checkout init --cone
+                        git sparse-checkout init --no-cone
                         git sparse-checkout set services/kafka
                         git pull origin main
                     '
