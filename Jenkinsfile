@@ -14,7 +14,7 @@ pipeline {
                 [key: 'modified_files', value: '$.commits[*].modified[*]', expressionType: 'JSONPath'],
                 [key: 'added_files', value: '$.commits[*].added[*]', expressionType: 'JSONPath'],
                 [key: 'removed_files', value: '$.commits[*].removed[*]', expressionType: 'JSONPath'],
-                [key: 'changed_file', value: '$.commits[0].modified[0]', expressionType: 'JSONPath']  // First modified file
+                [key: 'changed_file', value: '$.commits[0].modified[0]', expressionType: 'JSONPath']
             ],
             causeString: 'Triggered on changes to: $modified_files $added_files $removed_files',
             token: 'xiuxiulovejingjie',
@@ -35,11 +35,15 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
-                        set +e
-                        pkill -f run_connector.sh
-                        echo "[Connector Stop] pkill exit code: \$?"
-                        exit 0
-                    ' || true
+                        set -e
+                        PID=\$(lsof -ti:50001 || true)
+                        if [ -n "\$PID" ]; then
+                            echo "[Connector Stop] Killing PID \$PID on port 50001"
+                            kill -9 \$PID
+                        else
+                            echo "[Connector Stop] No process on port 50001"
+                        fi
+                    '
                     """
                 }
             }
@@ -50,11 +54,15 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
-                        set +e
-                        pkill -f run_kafka.sh
-                        echo "[Kafka Stop] pkill exit code: \$?"
-                        exit 0
-                    ' || true
+                        set -e
+                        PID=\$(lsof -ti:50003 || true)
+                        if [ -n "\$PID" ]; then
+                            echo "[Kafka Stop] Killing PID \$PID on port 50003"
+                            kill -9 \$PID
+                        else
+                            echo "[Kafka Stop] No process on port 50003"
+                        fi
+                    '
                     """
                 }
             }
@@ -65,8 +73,8 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                        set -e
                         rm -rf zwap/services/kafka
-                        exit 0
                     '
                     """
                 }
@@ -78,19 +86,21 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
-                        if [ ! -d zwap ]; then
-                            mkdir zwap
-                        fi
+                        set -e
+                        mkdir -p zwap
                         cd zwap
                         if [ ! -d .git ]; then
                             git init -b main
-                            git remote add origin ${REPO_URL}
-                            git config core.sparseCheckout true
-                            git sparse-checkout init --cone
-                            git sparse-checkout set services/kafka/
                         fi
+                        if git remote get-url origin >/dev/null 2>&1; then
+                            git remote set-url origin ${REPO_URL}
+                        else
+                            git remote add origin ${REPO_URL}
+                        fi
+                        git config core.sparseCheckout true
+                        git sparse-checkout init --cone
+                        git sparse-checkout set services/kafka/
                         git pull origin main
-                        exit 0
                     '
                     """
                 }
@@ -102,9 +112,9 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                        set -e
                         cd zwap/services/kafka
                         ./setup.sh
-                        exit 0
                     '
                     """
                 }
@@ -116,9 +126,9 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                        set -e
                         cd zwap/services/kafka
                         ./bootstrap.sh
-                        exit 0
                     '
                     """
                 }
@@ -130,9 +140,9 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                        set -e
                         cd zwap/services/kafka
                         nohup ./run_kafka.sh > kafka.log 2>&1 &
-                        exit 0
                     '
                     """
                 }
@@ -144,9 +154,9 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
+                        set -e
                         cd zwap/services/kafka
                         nohup ./run_connector.sh > connector.log 2>&1 &
-                        exit 0
                     '
                     """
                 }
@@ -159,15 +169,9 @@ pipeline {
                     sh """
                     sleep 60
                     ssh -o StrictHostKeyChecking=no \$HOST_KAFKA '
+                        set -e
                         nc -z localhost 50003
-                        if [ \$? -eq 0 ]; then
-                            echo "[Kafka Health] Kafka is running on port 50003"
-                            exit 0
-                        else
-                            echo "[Kafka Health] Kafka is NOT running on port 50003"
-                            exit 1
-                        fi
-                        exit 0
+                        echo "[Kafka Health] Kafka is running on port 50003"
                     '
                     """
                 }
@@ -179,15 +183,9 @@ pipeline {
                 sshagent([env.SSH_KEY]) {
                     sh """
                     ssh -o StrictHostKeyChecking=no \$HOST_CONNECTOR '
+                        set -e
                         nc -z localhost 50001
-                        if [ \$? -eq 0 ]; then
-                            echo "[Connector Health] Kafka Connect is running on port 50001"
-                            exit 0
-                        else
-                            echo "[Connector Health] Kafka Connect is NOT running on port 50001"
-                            exit 1
-                        fi
-                        
+                        echo "[Connector Health] Kafka Connect is running on port 50001"
                     '
                     """
                 }
