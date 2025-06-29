@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        KAFKA_ENV = credentials('kafka-env-file')
         SSH_KEY = 'linux-ssh-key'
         HOST_KAFKA = 'immactavish@linux-085'
         HOST_CONNECTOR = 'immactavish@linux-084'
@@ -101,6 +102,7 @@ pipeline {
                         git sparse-checkout init --cone
                         git sparse-checkout set services/kafka/
                         git pull origin main
+                        echo "\$KAFKA_ENV" > ~/zwap/services/kafka/.env
                     '
                     """
                 }
