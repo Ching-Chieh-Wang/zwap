@@ -33,8 +33,8 @@ pipeline {
         stage('Stop Connector (084)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_CONNECTOR '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_CONNECTOR} '
                             set -e
                             PID=$(lsof -ti:50001 || true)
                             if [ -n "$PID" ]; then
@@ -44,7 +44,7 @@ pipeline {
                                 echo "[Connector Stop] No process on port 50001"
                             fi
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -52,8 +52,8 @@ pipeline {
         stage('Stop Kafka (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             PID=$(lsof -ti:50003 || true)
                             if [ -n "$PID" ]; then
@@ -63,7 +63,7 @@ pipeline {
                                 echo "[Kafka Stop] No process on port 50003"
                             fi
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -71,12 +71,12 @@ pipeline {
         stage('Clean Kafka Folder (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             rm -rf zwap/services/kafka
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -84,8 +84,8 @@ pipeline {
         stage('Sparse Clone Kafka Folder (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             mkdir -p ~/zwap
                             cd ~/zwap
@@ -95,9 +95,9 @@ pipeline {
                             fi
 
                             if git remote get-url origin >/dev/null 2>&1; then
-                                git remote set-url origin $REPO_URL
+                                git remote set-url origin ${REPO_URL}
                             else
-                                git remote add origin $REPO_URL
+                                git remote add origin ${REPO_URL}
                             fi
 
                             git config core.sparseCheckout true
@@ -105,7 +105,7 @@ pipeline {
                             git sparse-checkout set services/kafka
                             git pull origin main
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -114,9 +114,9 @@ pipeline {
             steps {
                 sshagent([env.SSH_KEY]) {
                     withCredentials([file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE')]) {
-                        sh '''
-                            scp -o StrictHostKeyChecking=no $KAFKA_ENV_FILE $HOST_KAFKA:~/zwap/services/kafka/.env
-                        '''
+                        sh """
+                            scp -o StrictHostKeyChecking=no ${KAFKA_ENV_FILE} ${HOST_KAFKA}:~/zwap/services/kafka/.env
+                        """
                     }
                 }
             }
@@ -125,13 +125,13 @@ pipeline {
         stage('Setup Kafka (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             cd zwap/services/kafka
                             ./setup.sh
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -139,13 +139,13 @@ pipeline {
         stage('Bootstrap Kafka (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             cd zwap/services/kafka
                             ./bootstrap.sh
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -153,13 +153,13 @@ pipeline {
         stage('Run Kafka (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             cd zwap/services/kafka
                             nohup ./run_kafka.sh > kafka.log 2>&1 &
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -167,13 +167,13 @@ pipeline {
         stage('Run Connector (084)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_CONNECTOR '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_CONNECTOR} '
                             set -e
                             cd zwap/services/kafka
                             nohup ./run_connector.sh > connector.log 2>&1 &
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -181,14 +181,14 @@ pipeline {
         stage('Verify Kafka (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
+                    sh """
                         sleep 60
-                        ssh -o StrictHostKeyChecking=no $HOST_KAFKA '
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
                             set -e
                             nc -z localhost 50003
                             echo "[Kafka Health] Kafka is running on port 50003"
                         '
-                    '''
+                    """
                 }
             }
         }
@@ -196,13 +196,13 @@ pipeline {
         stage('Verify Connector (084)') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no $HOST_CONNECTOR '
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_CONNECTOR} '
                             set -e
                             nc -z localhost 50001
                             echo "[Connector Health] Kafka Connect is running on port 50001"
                         '
-                    '''
+                    """
                 }
             }
         }
