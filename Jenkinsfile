@@ -15,6 +15,7 @@ pipeline {
             ],
             causeString: 'GitHub Push detected. Changed: $changed_files',
             printContributedVariables: true,
+            token: 'xiuxiulovejingjie',
             printPostContent: true,
             regexpFilterText: '$changed_files',
             regexpFilterExpression: 'services/kafka/.*'
