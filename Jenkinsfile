@@ -68,6 +68,13 @@ pipeline {
             }
         }
 
+        stage('Wait for Kafka, connector stop') {
+            steps {
+                echo 'Sleeping 10 seconds to let Kafka and connector start...'
+                sh 'sleep 10'
+            }
+        }
+
 
         stage('Sparse Clone Kafka Folder (085)') {
             steps {
