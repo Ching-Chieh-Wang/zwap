@@ -29,6 +29,7 @@ pipeline {
         skipDefaultCheckout()
     }
 
+    stages {
         stage('Stop Connector (084)') {
             steps {
                 sshagent([env.SSH_KEY]) {
