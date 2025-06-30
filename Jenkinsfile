@@ -36,7 +36,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            PID=\\\$(lsof -ti linux-084.khoury.northeastern.edu:50001 || true)
+                            PID=\\\$(ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} "lsof -ti :50001 || true")
                             if [ -n "\\\$PID" ]; then
                                 echo "[Connector Stop] Killing PID \\$PID on port 50001"
                                 kill -9 \\$PID
@@ -55,7 +55,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            PID=\\\$(lsof -ti linux-085.khoury.northeastern.edu:50003 || true)
+                            PID=\\\$(ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} "lsof -ti :50003 || true")
                             if [ -n "\\\$PID" ]; then
                                 echo "[Kafka Stop] Killing PID \\$PID on port 50003"
                                 kill -9 \\$PID
