@@ -36,10 +36,10 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            PID=\\\$(ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} "lsof -ti :50001 || true")
-                            if [ -n "\\\$PID" ]; then
-                                echo "[Connector Stop] Killing PID \\$PID on port 50001"
-                                kill -9 \\$PID
+                            PID=\$(ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} "lsof -ti :50001 || true")
+                            if [ -n "\$PID" ]; then
+                                echo "[Connector Stop] Killing PID \$PID on port 50001"
+                                ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} "kill -9 \$PID"
                             else
                                 echo "[Connector Stop] No process on port 50001"
                             fi
@@ -201,7 +201,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            if nc -z linux-084.khoury.northeastern.edu 50001; then
+                            if nc -z \${HOST_CONNECTOR#*@} 50001; then
                                 echo "[Connector Health] Kafka Connect is running on port 50001"
                             else
                                 echo "[Connector Health] Kafka Connect is NOT running on port 50001"
