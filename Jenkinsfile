@@ -171,9 +171,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            ip=\$(hostname -I | awk "{print \\\$1}")
-                            echo "Checking Kafka on IP: \\\$ip"
-                            if lsof -i @\\\$ip:50003 | grep LISTEN; then
+                            if lsof -i :50003 | grep LISTEN; then
                                 echo "[Kafka Health] Kafka is running on port 50003"
                             else
                                 echo "[Kafka Health] Kafka is NOT running on port 50003"
@@ -191,9 +189,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            ip=\$(hostname -I | awk "{print \\\$1}")
-                            echo "Checking Connector on IP: \\\$ip"
-                            if lsof -i @\\\$ip:50001 | grep LISTEN; then
+                            if lsof -i :50001 | grep LISTEN; then
                                 echo "[Connector Health] Kafka Connect is running on port 50001"
                             else
                                 echo "[Connector Health] Kafka Connect is NOT running on port 50001"
