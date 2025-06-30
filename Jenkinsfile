@@ -73,25 +73,25 @@ pipeline {
             steps {
                 sshagent([env.SSH_KEY]) {
                     sh """
-                    ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                        set -e
-                        rm -rf ~/zwap
-                        mkdir -p ~/zwap
-                        cd ~/zwap
+                        ssh -o StrictHostKeyChecking=no ${HOST_KAFKA} '
+                            set -e
+                            rm -rf ~/zwap
+                            mkdir -p ~/zwap
+                            cd ~/zwap
 
-                        git init -b main
+                            git init -b main
 
-                        if git remote get-url origin >/dev/null 2>&1; then
-                            git remote set-url origin \${REPO_URL}
-                        else
-                            git remote add origin \${REPO_URL}
-                        fi
+                            if git remote get-url origin >/dev/null 2>&1; then
+                                git remote set-url origin "${REPO_URL}"
+                            else
+                                git remote add origin "${REPO_URL}"
+                            fi
 
-                        git config core.sparseCheckout true
-                        git sparse-checkout init --no-cone
-                        git sparse-checkout set services/kafka
-                        git pull origin main
-                    '
+                            git config core.sparseCheckout true
+                            git sparse-checkout init --no-cone
+                            git sparse-checkout set services/kafka
+                            git pull origin main
+                        '
                     """
                 }
             }
