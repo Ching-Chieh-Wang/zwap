@@ -84,7 +84,7 @@ pipeline {
                         if git remote get-url origin >/dev/null 2>&1; then
                             git remote set-url origin \${REPO_URL}
                         else
-                            git remote add origin \${REPO_URL}
+                            git remote add origin "\${REPO_URL}"
                         fi
 
                         git config core.sparseCheckout true
