@@ -165,6 +165,13 @@ pipeline {
             }
         }
 
+        stage('Wait for Kafka, connector Startup') {
+            steps {
+                echo 'Sleeping 30 seconds to let Kafka and connector start...'
+                sh 'sleep 30'
+            }
+        }
+
         stage('Verify Kafka (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
