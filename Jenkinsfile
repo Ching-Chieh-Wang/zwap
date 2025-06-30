@@ -29,17 +29,16 @@ pipeline {
         skipDefaultCheckout()
     }
 
-    stages {
         stage('Stop Connector (084)') {
             steps {
                 sshagent([env.SSH_KEY]) {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            PID=\$(ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} "lsof -ti :50001 || true")
+                            PID=\$(lsof -ti :50001 || true)
                             if [ -n "\$PID" ]; then
                                 echo "[Connector Stop] Killing PID \$PID on port 50001"
-                                ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} "kill -9 \$PID"
+                                kill -9 \$PID
                             else
                                 echo "[Connector Stop] No process on port 50001"
                             fi
@@ -55,10 +54,10 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            PID=\\\$(ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} "lsof -ti :50003 || true")
-                            if [ -n "\\\$PID" ]; then
-                                echo "[Kafka Stop] Killing PID \\$PID on port 50003"
-                                kill -9 \\$PID
+                            PID=\$(ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} "lsof -ti :50003 || true")
+                            if [ -n "\$PID" ]; then
+                                echo "[Kafka Stop] Killing port 50003"
+                                kill -9 \$PID
                             else
                                 echo "[Kafka Stop] No process on port 50003"
                             fi
