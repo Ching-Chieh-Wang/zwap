@@ -55,7 +55,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            PID=\$(ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} "lsof -ti :50003 || true")
+                            PID=\$(lsof -ti :50003 || true)
                             if [ -n "\$PID" ]; then
                                 echo "[Kafka Stop] Killing port 50003"
                                 kill -9 \$PID
@@ -68,18 +68,6 @@ pipeline {
             }
         }
 
-        stage('Clean Kafka Folder (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                            set -e
-                            rm -rf zwap/services/kafka
-                        '
-                    """
-                }
-            }
-        }
 
         stage('Sparse Clone Kafka Folder (085)') {
             steps {
