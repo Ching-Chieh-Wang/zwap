@@ -183,8 +183,12 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            nc -z localhost 50003
-                            echo "[Kafka Health] Kafka is running on port 50003"
+                            if nc -z linux-085.khoury.northeastern.edu 50003; then
+                                echo "[Kafka Health] Kafka is running on port 50003"
+                            else
+                                echo "[Kafka Health] Kafka is NOT running on port 50003"
+                                exit 1
+                            fi
                         '
                     """
                 }
@@ -197,8 +201,12 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            nc -z localhost 50001
-                            echo "[Connector Health] Kafka Connect is running on port 50001"
+                            if nc -z linux-084.khoury.northeastern.edu 50001; then
+                                echo "[Connector Health] Kafka Connect is running on port 50001"
+                            else
+                                echo "[Connector Health] Kafka Connect is NOT running on port 50001"
+                                exit 1
+                            fi
                         '
                     """
                 }
