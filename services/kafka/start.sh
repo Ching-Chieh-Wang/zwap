@@ -28,7 +28,8 @@ elif [[ "$1" == "connector" ]]; then
   exec /opt/bitnami/kafka/bin/connect-standalone.sh \
     /opt/bitnami/kafka/config/connect-standalone.properties \
     /opt/bitnami/kafka/config/mongodb-connector.properties \
-    /opt/bitnami/kafka/config/redis-connector.properties
+    /opt/bitnami/kafka/config/redis-connector.properties \
+    /opt/bitnami/kafka/config/elasticsearch-connector.properties
 
 else
   echo "[!] Unknown or missing argument. Use one of: kafka | connector"

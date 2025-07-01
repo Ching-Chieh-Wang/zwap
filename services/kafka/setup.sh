@@ -44,6 +44,10 @@ echo "    - kraft-broker-template → kraft-broker.properties"
 envsubst < config/kraft-broker-template.properties \
          > config/kraft-broker.properties
 
+echo "    - elasticsearch-connector-template → elasticsearch-connector.properties"
+envsubst < config/elasticsearch-connector-template.properties \
+        > config/elasticsearch-connector.properties
+
 echo "[+] All templates resolved."
 
 echo "[+] Downloading Debezium MongoDB connector (3.1.2.Final)..."
