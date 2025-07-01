@@ -67,14 +67,13 @@ cp tmp-redis/redis-redis-kafka-connect-0.9.1/lib/*.jar \
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
-echo "[+] Downloading Elasticsearch sink connector (14.0.12)..."
-ELASTIC_VERSION=14.0.12
-ELASTIC_URL="https://packages.confluent.io/archive/connectors/confluentinc-kafka-connect-elasticsearch-${ELASTIC_VERSION}.zip"
+echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
+curl -sSL -o elasticsearch.zip \
+  https://hub-downloads.confluent.io/api/plugins/confluentinc/kafka-connect-elasticsearch/versions/15.0.0/confluentinc-kafka-connect-elasticsearch-15.0.0.zip
 
-curl -sSL -o elasticsearch.zip "$ELASTIC_URL"
 unzip -qo elasticsearch.zip -d tmp-elasticsearch
 mkdir -p plugins/elasticsearch-sink
-cp tmp-elasticsearch/confluentinc-kafka-connect-elasticsearch-${ELASTIC_VERSION}/lib/*.jar \
+cp tmp-elasticsearch/confluentinc-kafka-connect-elasticsearch-15.0.0/lib/*.jar \
    plugins/elasticsearch-sink/
 rm -rf tmp-elasticsearch elasticsearch.zip
 echo "[+] Elasticsearch sink connector JARs copied to plugins/elasticsearch-sink."
