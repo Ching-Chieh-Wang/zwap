@@ -189,6 +189,8 @@ pipeline {
                                 echo "[Kafka Health] Kafka is running on port 50003"
                             else
                                 echo "[Kafka Health] Kafka is NOT running on port 50003"
+                                echo "[Kafka Health] Showing kafka.log tail for debugging:"
+                                tail -100 zwap/services/kafka/kafka.log || true
                                 exit 1
                             fi
                         '
@@ -207,6 +209,8 @@ pipeline {
                                 echo "[Connector Health] Connector is running on port 50001"
                             else
                                 echo "[Connector Health] Connector is NOT running on port 50001"
+                                echo "[Connector Health] Showing connector.log tail for debugging:"
+                                tail -100 zwap/services/kafka/connector.log || true
                                 exit 1
                             fi
                         '
