@@ -185,7 +185,6 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            ss -tulwn
                             if ss -tulwn | grep ":50003"; then
                                 echo "[Kafka Health] Kafka is running on port 50003"
                             else
