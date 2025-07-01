@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        SSH_KEY = 'linux-ssh-key'
+        SSH_KEY = 'linux-server'
         HOST_KAFKA = 'immactavish@linux-085'
         HOST_CONNECTOR = 'immactavish@linux-084'
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
