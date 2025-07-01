@@ -165,6 +165,7 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
                             cd zwap/services/kafka
+                            export LOG4J_CONFIGURATION_FILE=/opt/bitnami/kafka/config/log4j2.yaml
                             nohup ./run_connector.sh > connector.log 2>&1 &
                         '
                     """
@@ -190,7 +191,7 @@ pipeline {
                             else
                                 echo "[Kafka Health] Kafka is NOT running on port 50003"
                                 echo "[Kafka Health] Showing kafka.log tail for debugging:"
-                                tail -100 zwap/services/kafka/kafka.log || true
+                                cat zwap/services/kafka/kafka.log || true
                                 exit 1
                             fi
                         '
@@ -210,7 +211,7 @@ pipeline {
                             else
                                 echo "[Connector Health] Connector is NOT running on port 50001"
                                 echo "[Connector Health] Showing connector.log tail for debugging:"
-                                tail -100 zwap/services/kafka/connector.log || true
+                                cat zwap/services/kafka/connector.log || true
                                 exit 1
                             fi
                         '
