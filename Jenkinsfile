@@ -113,7 +113,7 @@ pipeline {
                     ]) {
                         sh """
                             scp -o StrictHostKeyChecking=no "\${KAFKA_ENV_FILE}" "\${HOST_KAFKA}:~/zwap/services/kafka/.env"
-                            scp -o StrictHostKeyChecking=no "\${JKS_FILE}" "\${HOST_CONNECTOR}:~/elasticsearch.jks"
+                            scp -o StrictHostKeyChecking=no "\${JKS_FILE}" "\${HOST_CONNECTOR}:~/zwap/services/kafka/elasticsearch.jks"
                         """
                     }
                 }
