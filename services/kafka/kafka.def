@@ -5,7 +5,6 @@ From: bitnami/kafka:latest
     start.sh                             /opt/bitnami/kafka/start.sh
     config/*                             /opt/bitnami/kafka/config
     plugins/                            /opt/bitnami/kafka/plugins
-    elasticsearch.jks                   /opt/bitnami/kafka/elasticsearch.jks
 %post
     chmod +x /opt/bitnami/kafka/start.sh 
     echo "Container setup done."

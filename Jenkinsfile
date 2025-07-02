@@ -104,16 +104,12 @@ pipeline {
             }
         }
 
-        stage('Copy .env and JKS to Kafka/Connector') {
+        stage('Copy .env to Kafka') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    withCredentials([
-                        file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE'),
-                        file(credentialsId: 'elasticsearch-jks', variable: 'JKS_FILE')
-                    ]) {
+                    withCredentials([file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE')]) {
                         sh """
                             scp -o StrictHostKeyChecking=no "\${KAFKA_ENV_FILE}" "\${HOST_KAFKA}:~/zwap/services/kafka/.env"
-                            scp -o StrictHostKeyChecking=no "\${JKS_FILE}" "\${HOST_CONNECTOR}:~/zwap/services/kafka/elasticsearch.jks"
                         """
                     }
                 }
@@ -194,7 +190,7 @@ pipeline {
                                 echo "[Kafka Health] Kafka is running on port 50003"
                             else
                                 echo "[Kafka Health] Kafka is NOT running on port 50003"
-                                echo "[Kafka Health] Showing kafka.log tail for debugging:"
+                                echo "[Kafka Health] Showing kafka.log  for debugging:"
                                 cat zwap/services/kafka/kafka.log || true
                                 exit 1
                             fi
@@ -214,7 +210,7 @@ pipeline {
                                 echo "[Connector Health] Connector is running on port 50001"
                             else
                                 echo "[Connector Health] Connector is NOT running on port 50001"
-                                echo "[Connector Health] Showing connector.log tail for debugging:"
+                                echo "[Connector Health] Showing connector.log  for debugging:"
                                 cat zwap/services/kafka/connector.log || true
                                 exit 1
                             fi
