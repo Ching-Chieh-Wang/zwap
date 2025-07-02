@@ -104,12 +104,16 @@ pipeline {
             }
         }
 
-        stage('Copy .env to Kafka') {
+        stage('Copy .env and JKS to Kafka/Connector') {
             steps {
                 sshagent([env.SSH_KEY]) {
-                    withCredentials([file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE')]) {
+                    withCredentials([
+                        file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE'),
+                        file(credentialsId: 'elasticsearch-jks', variable: 'JKS_FILE')
+                    ]) {
                         sh """
                             scp -o StrictHostKeyChecking=no "\${KAFKA_ENV_FILE}" "\${HOST_KAFKA}:~/zwap/services/kafka/.env"
+                            scp -o StrictHostKeyChecking=no "\${JKS_FILE}" "\${HOST_CONNECTOR}:~/elasticsearch.jks"
                         """
                     }
                 }
