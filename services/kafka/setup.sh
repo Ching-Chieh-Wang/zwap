@@ -66,7 +66,7 @@ curl -sSL -o redis.zip \
   https://hub-downloads.confluent.io/api/plugins/jcustenborder/kafka-connect-redis/versions/0.0.8/jcustenborder-kafka-connect-redis-0.0.8.zip
 
 unzip -qo redis.zip -d tmp-redis
-cp tmp-redis/redis-redis-kafka-connect-0.9.1/lib/*.jar \
+cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
    plugins/redis-sink/
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
