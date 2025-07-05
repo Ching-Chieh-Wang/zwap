@@ -61,18 +61,19 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Downloading jcustenborder Kafka Connect Redis sink connector..."
-curl -sSL -o redis-connector.zip https://packages.confluent.io/maven/com/github/jcustenborder/kafka-connect-redis/0.0.8/kafka-connect-redis-0.0.8-package.zip
+echo "[+] Cloning jcustenborder/kafka-connect-redis from GitHub..."
+git clone --depth 1 https://github.com/jcustenborder/kafka-connect-redis.git tmp-jcustenborder-redis
 
-mkdir -p tmp-redis
-unzip -qo redis-connector.zip -d tmp-redis
-# This creates: tmp-redis/kafka-connect-redis-0.0.8/lib/
+cd tmp-jcustenborder-redis
+mvn clean package -DskipTests
+cd ..
 
 mkdir -p plugins/redis-sink
-cp tmp-redis/kafka-connect-redis-0.0.8/lib/*.jar plugins/redis-sink/
+cp tmp-jcustenborder-redis/target/kafka-connect-redis-*.jar plugins/redis-sink/
+# If dependencies aren't bundled, you may need to collect those too.
+rm -rf tmp-jcustenborder-redis
 
-rm -rf tmp-redis redis-connector.zip
-echo "[+] jcustenborder Redis sink connector JARs copied to plugins/redis-sink."
+echo "[+] jcustenborder Redis sink connector JAR copied from build."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
