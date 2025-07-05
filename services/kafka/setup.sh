@@ -61,35 +61,18 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Cloning and building andrecowie/redis-kafka-connect (master branch) with Gradle..."
-git clone --depth 1 https://github.com/andrecowie/redis-kafka-connect.git tmp-redis-kafka-connect
+echo "[+] Downloading jcustenborder Kafka Connect Redis sink connector..."
+curl -sSL -o redis-connector.zip https://packages.confluent.io/maven/com/github/jcustenborder/kafka-connect-redis/0.0.8/kafka-connect-redis-0.0.8-package.zip
 
-cd tmp-redis-kafka-connect
+mkdir -p tmp-redis
+unzip -qo redis-connector.zip -d tmp-redis
+# This creates: tmp-redis/kafka-connect-redis-0.0.8/lib/
 
-# Build with Gradle (use wrapper if present, else fallback to system gradle)
-if [ -f ./gradlew ]; then
-  ./gradlew clean shadowJar
-else
-  gradle clean shadowJar
-fi
-
-
-cd ..
-
-# Copy the resulting JAR to the plugins directory
 mkdir -p plugins/redis-sink
-cp tmp-redis-kafka-connect/build/libs/redis-kafka-connect-*-all.jar plugins/redis-sink/
+cp tmp-redis/kafka-connect-redis-0.0.8/lib/*.jar plugins/redis-sink/
 
-rm -rf tmp-redis-kafka-connect
-
-echo "[+] Built Redis sink connector JAR copied to plugins/redis-sink."
-
-
-if [ -d "tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib" ]; then
-  echo "[+] Copying all JARs from jcustenborder-kafka-connect-redis-0.0.8 to plugins/redis-sink (for legacy support)..."
-  cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar plugins/redis-sink/
-  echo "[+] Legacy jcustenborder connector JARs copied."
-fi
+rm -rf tmp-redis redis-connector.zip
+echo "[+] jcustenborder Redis sink connector JARs copied to plugins/redis-sink."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
