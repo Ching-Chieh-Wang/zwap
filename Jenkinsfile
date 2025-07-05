@@ -175,8 +175,8 @@ pipeline {
 
         stage('Wait for Kafka, connector Startup') {
             steps {
-                echo 'Sleeping 30 seconds to let Kafka and connector start...'
-                sh 'sleep 30'
+                echo 'Sleeping 10 seconds to let Kafka and connector start...'
+                sh 'sleep 10'
             }
         }
 
