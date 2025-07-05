@@ -72,7 +72,8 @@ rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
 # Download Netty Native JARs for Linux (Epoll + Unix Common)
-PLUGIN_DIR="plugins/redis-sink-netty"
+PLUGIN_DIR="plugins/redis-sink"
+mkdir -p "$PLUGIN_DIR"
 NETTY_VERSION="4.1.109.Final"
 wget -nv -O "$PLUGIN_DIR/netty-transport-native-unix-common-$NETTY_VERSION.jar" \
   "https://repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/$NETTY_VERSION/netty-transport-native-unix-common-$NETTY_VERSION.jar"
