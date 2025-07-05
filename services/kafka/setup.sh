@@ -61,15 +61,15 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Downloading Redis sink connector (0.9.1)..."
-curl -sSL -o redis.zip \
-  https://hub-downloads.confluent.io/api/plugins/redis/redis-kafka-connect/versions/0.9.1/redis-redis-kafka-connect-0.9.1.zip
-
-unzip -qo redis.zip -d tmp-redis
-cp tmp-redis/redis-redis-kafka-connect-0.9.1/lib/*.jar \
-   plugins/redis-sink/
-rm -rf tmp-redis redis.zip
-echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
+echo "[+] Cloning and building redis-field-engineering/redis-kafka-connect (main branch)..."
+git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git tmp-redis-kafka-connect
+cd tmp-redis-kafka-connect
+./gradlew clean shadowJar
+cd ..
+mkdir -p plugins/redis-sink
+cp tmp-redis-kafka-connect/build/libs/redis-kafka-connect-*-all.jar plugins/redis-sink/
+rm -rf tmp-redis-kafka-connect
+echo "[+] Built Redis sink connector JAR copied to plugins/redis-sink."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
