@@ -71,21 +71,24 @@ cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
-echo "[+] Downloading required Netty JARs for Redis sink connector..."
+# Define plugin directory (change if yours is different)
+PLUGIN_DIR="/opt/bitnami/kafka/plugins/kafka-connect-redis"
+
+# Create directory if not exists
+mkdir -p "$PLUGIN_DIR"
+
+# Download Netty Native JARs for Linux (Epoll + Unix Common)
 NETTY_VERSION="4.1.109.Final"
-NETTY_BASE_URL="https://repo1.maven.org/maven2/io/netty"
-NETTY_JARS=(
-  netty-common
-  netty-buffer
-  netty-transport
-  netty-resolver
-  netty-handler
-  netty-codec
-)
-for jar in "${NETTY_JARS[@]}"; do
-  curl -sSL -o plugins/redis-sink/$jar-$NETTY_VERSION.jar \
-    $NETTY_BASE_URL/$jar/$NETTY_VERSION/$jar-$NETTY_VERSION.jar
-done
+wget -nv -O "$PLUGIN_DIR/netty-transport-native-unix-common-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/$NETTY_VERSION/netty-transport-native-unix-common-$NETTY_VERSION.jar"
+wget -nv -O "$PLUGIN_DIR/netty-transport-native-epoll-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/$NETTY_VERSION/netty-transport-native-epoll-$NETTY_VERSION.jar"
+
+# (Optional) If you want to force Linux native classifier (sometimes needed):
+# wget -nv -O "$PLUGIN_DIR/netty-transport-native-epoll-$NETTY_VERSION-linux-x86_64.jar" \
+#   "https://repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/$NETTY_VERSION/netty-transport-native-epoll-$NETTY_VERSION-linux-x86_64.jar"
+
+echo "Netty native JARs installed in $PLUGIN_DIR"
 echo "[+] Netty JARs downloaded."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
