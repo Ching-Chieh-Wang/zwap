@@ -13,13 +13,8 @@ import java.util.List;
 @Slf4j
 public class ProductController {
 
-    @GetMapping("/search")
-    public List<ProductVO> search(@RequestBody ProductSearchDTO productSearchDTO) {
-        return new ArrayList<ProductVO>();
-    }
-
     @GetMapping("/")
-    public ProductVO getById(@RequestParam("id") String id, ProductSearchDTO productSearchDTO) {
+    public ProductVO getById(@RequestParam("id") String id) {
         return new ProductVO();
     }
 }
