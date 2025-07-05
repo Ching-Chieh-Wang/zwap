@@ -63,10 +63,10 @@ echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
 echo "[+] Downloading Redis sink connector (0.9.1)..."
 curl -sSL -o redis.zip \
-  https://hub-downloads.confluent.io/api/plugins/redis/redis-kafka-connect/versions/0.9.1/redis-redis-kafka-connect-0.9.1.zip
+   https://hub-downloads.confluent.io/api/plugins/redis/redis-enterprise-kafka/versions/6.7.4/redis-redis-enterprise-kafka-6.7.4.zip
 
 unzip -qo redis.zip -d tmp-redis
-cp tmp-redis/redis-redis-kafka-connect-0.9.1/lib/*.jar \
+cp tmp-redis/redis-redis-enterprise-kafka-6.7.4/lib/*.jar \
    plugins/redis-sink/
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
