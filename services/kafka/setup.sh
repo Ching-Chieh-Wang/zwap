@@ -63,13 +63,45 @@ echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
 echo "[+] Downloading Redis sink connector (0.9.1)..."
 curl -sSL -o redis.zip \
-  https://hub-downloads.confluent.io/api/plugins/redis/redis-kafka-connect/versions/0.9.1/redis-redis-kafka-connect-0.9.1.zip
+  https://hub-downloads.confluent.io/api/plugins/jcustenborder/kafka-connect-redis/versions/0.0.8/jcustenborder-kafka-connect-redis-0.0.8.zip
 
 unzip -qo redis.zip -d tmp-redis
-cp tmp-redis/redis-redis-kafka-connect-0.9.1/lib/*.jar \
+cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
    plugins/redis-sink/
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
+
+# Download Netty Native JARs
+PLUGIN_DIR="plugins/redis-sink"
+mkdir -p "$PLUGIN_DIR"
+NETTY_VERSION="4.1.109.Final"
+
+wget -nv -O "$PLUGIN_DIR/netty-handler-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-handler/$NETTY_VERSION/netty-handler-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-buffer-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-buffer/$NETTY_VERSION/netty-buffer-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-common-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-common/$NETTY_VERSION/netty-common-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-codec-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-codec/$NETTY_VERSION/netty-codec-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-transport-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport/$NETTY_VERSION/netty-transport-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-resolver-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-resolver/$NETTY_VERSION/netty-resolver-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-transport-native-unix-common-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/$NETTY_VERSION/netty-transport-native-unix-common-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-transport-native-epoll-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/$NETTY_VERSION/netty-transport-native-epoll-$NETTY_VERSION.jar"
+
+echo "Netty native JARs installed in $PLUGIN_DIR"
+echo "[+] Netty JARs downloaded."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
