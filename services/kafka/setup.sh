@@ -61,14 +61,26 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Cloning and building redis-field-engineering/redis-kafka-connect (main branch)..."
+echo "[+] Cloning and building redis-batch (v7.4 tag) with Maven..."
 git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git tmp-redis-kafka-connect
+
 cd tmp-redis-kafka-connect
-./gradlew clean shadowJar
+
+# Use Maven wrapper if present, else fallback to system Maven
+if [ -f ./mvnw ]; then
+  ./mvnw clean package -DskipTests
+else
+  mvn clean package -DskipTests
+fi
+
 cd ..
+
+# Copy the resulting JAR to the plugins directory
 mkdir -p plugins/redis-sink
-cp tmp-redis-kafka-connect/build/libs/redis-kafka-connect-*-all.jar plugins/redis-sink/
+cp tmp-redis-kafka-connect/target/redis-kafka-connect-*-all.jar plugins/redis-sink/
+
 rm -rf tmp-redis-kafka-connect
+
 echo "[+] Built Redis sink connector JAR copied to plugins/redis-sink."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
