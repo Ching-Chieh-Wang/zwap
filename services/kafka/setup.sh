@@ -73,6 +73,7 @@ else
   gradle clean shadowJar
 fi
 
+
 cd ..
 
 # Copy the resulting JAR to the plugins directory
@@ -82,6 +83,13 @@ cp tmp-redis-kafka-connect/build/libs/redis-kafka-connect-*-all.jar plugins/redi
 rm -rf tmp-redis-kafka-connect
 
 echo "[+] Built Redis sink connector JAR copied to plugins/redis-sink."
+
+
+if [ -d "tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib" ]; then
+  echo "[+] Copying all JARs from jcustenborder-kafka-connect-redis-0.0.8 to plugins/redis-sink (for legacy support)..."
+  cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar plugins/redis-sink/
+  echo "[+] Legacy jcustenborder connector JARs copied."
+fi
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
