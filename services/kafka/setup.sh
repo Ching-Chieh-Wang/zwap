@@ -71,7 +71,7 @@ cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
-# Download Netty Native JARs for Linux (Epoll + Unix Common)
+# Download Netty Native JARs
 PLUGIN_DIR="plugins/redis-sink"
 mkdir -p "$PLUGIN_DIR"
 NETTY_VERSION="4.1.109.Final"
@@ -91,6 +91,14 @@ wget -nv -O "$PLUGIN_DIR/netty-codec-$NETTY_VERSION.jar" \
 wget -nv -O "$PLUGIN_DIR/netty-transport-$NETTY_VERSION.jar" \
   "https://repo1.maven.org/maven2/io/netty/netty-transport/$NETTY_VERSION/netty-transport-$NETTY_VERSION.jar"
 
+wget -nv -O "$PLUGIN_DIR/netty-resolver-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-resolver/$NETTY_VERSION/netty-resolver-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-transport-native-unix-common-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/$NETTY_VERSION/netty-transport-native-unix-common-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-transport-native-epoll-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/$NETTY_VERSION/netty-transport-native-epoll-$NETTY_VERSION.jar"
 
 echo "Netty native JARs installed in $PLUGIN_DIR"
 echo "[+] Netty JARs downloaded."
