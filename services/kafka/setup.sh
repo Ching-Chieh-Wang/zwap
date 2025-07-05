@@ -61,24 +61,19 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Cloning jcustenborder/kafka-connect-redis from GitHub..."
-git clone --depth 1 https://github.com/jcustenborder/kafka-connect-redis.git tmp-jcustenborder-redis
+echo "[+] Cloning andrecowie/redis-kafka-connect from GitHub..."
+git clone --depth 1 https://github.com/andrecowie/redis-kafka-connect.git tmp-redis-kafka-connect
 
-cd tmp-jcustenborder-redis
-mvn clean package -DskipTests
-mvn dependency:copy-dependencies -DoutputDirectory=target/dependency
+cd tmp-redis-kafka-connect
+./gradlew clean build
 cd ..
 
 mkdir -p plugins/redis-sink
+cp tmp-redis-kafka-connect/build/libs/*.jar plugins/redis-sink/
 
-# Copy all built jars and dependencies to plugin dir
-cp tmp-jcustenborder-redis/target/kafka-connect-redis-0.0.2-SNAPSHOT.jar plugins/redis-sink/
+rm -rf tmp-redis-kafka-connect
 
-rm -rf tmp-jcustenborder-redis
 
-echo "[+] jcustenborder Redis sink connector JARs and dependencies copied from build."
-
-echo "[+] jcustenborder Redis sink connector JAR copied from build."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
