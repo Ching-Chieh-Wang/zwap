@@ -65,7 +65,7 @@ echo "[+] Cloning andrecowie/redis-kafka-connect from GitHub..."
 git clone --depth 1 https://github.com/andrecowie/redis-kafka-connect.git tmp-redis-kafka-connect
 
 cd tmp-redis-kafka-connect
-./gradlew clean build
+./gradlew clean build -x test
 cd ..
 
 mkdir -p plugins/redis-sink
