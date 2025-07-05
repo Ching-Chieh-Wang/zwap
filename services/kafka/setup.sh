@@ -69,9 +69,13 @@ mvn clean package -DskipTests
 cd ..
 
 mkdir -p plugins/redis-sink
-cp tmp-jcustenborder-redis/target/kafka-connect-redis-*.jar plugins/redis-sink/
-# If dependencies aren't bundled, you may need to collect those too.
+
+# Copy all built jars and dependencies to plugin dir
+cp tmp-jcustenborder-redis/target/kafka-connect-redis-0.0.2-SNAPSHOT.jar plugins/redis-sink/
+
 rm -rf tmp-jcustenborder-redis
+
+echo "[+] jcustenborder Redis sink connector JARs and dependencies copied from build."
 
 echo "[+] jcustenborder Redis sink connector JAR copied from build."
 
