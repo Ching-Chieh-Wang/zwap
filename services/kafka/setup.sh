@@ -77,7 +77,7 @@ cd ..
 
 # Copy the resulting JAR to the plugins directory
 mkdir -p plugins/redis-sink
-cp tmp-redis-kafka-connect/target/redis-kafka-connect-*-all.jar plugins/redis-sink/
+cp tmp-redis-kafka-connect/target/redis-kafka-connect-*.jar plugins/redis-sink/
 
 rm -rf tmp-redis-kafka-connect
 
