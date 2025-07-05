@@ -69,7 +69,7 @@ cd tmp-redis-kafka-connect
 cd ..
 
 mkdir -p plugins/redis-sink
-cp tmp-redis-kafka-connect/build/libs/*.jar plugins/redis-sink/
+cp tmp-redis-kafka-connect/core/redis-kafka-connect/build/libs/*.jar plugins/redis-sink/
 
 rm -rf tmp-redis-kafka-connect
 
