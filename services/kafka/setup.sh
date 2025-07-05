@@ -71,6 +71,23 @@ cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
 rm -rf tmp-redis redis.zip
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
+echo "[+] Downloading required Netty JARs for Redis sink connector..."
+NETTY_VERSION="4.1.109.Final"
+NETTY_BASE_URL="https://repo1.maven.org/maven2/io/netty"
+NETTY_JARS=(
+  netty-common
+  netty-buffer
+  netty-transport
+  netty-resolver
+  netty-handler
+  netty-codec
+)
+for jar in "${NETTY_JARS[@]}"; do
+  curl -sSL -o plugins/redis-sink/$jar-$NETTY_VERSION.jar \
+    $NETTY_BASE_URL/$jar/$NETTY_VERSION/$jar-$NETTY_VERSION.jar
+done
+echo "[+] Netty JARs downloaded."
+
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
   https://hub-downloads.confluent.io/api/plugins/confluentinc/kafka-connect-elasticsearch/versions/15.0.0/confluentinc-kafka-connect-elasticsearch-15.0.0.zip
