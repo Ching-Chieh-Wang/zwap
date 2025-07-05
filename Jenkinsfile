@@ -57,7 +57,7 @@ pipeline {
                             set -e
                             PID=\$(lsof -ti :50003 || true)
                             if [ -n "\$PID" ]; then
-                                echo "[Kafka Stop] Killing Killing PID \$PID on port 50003"
+                                echo "[Kafka Stop] Killing PID \$PID on port 50003"
                                 kill -9 \$PID
                             else
                                 echo "[Kafka Stop] No process on port 50003"

@@ -66,6 +66,7 @@ git clone --depth 1 https://github.com/jcustenborder/kafka-connect-redis.git tmp
 
 cd tmp-jcustenborder-redis
 mvn clean package -DskipTests
+mvn dependency:copy-dependencies -DoutputDirectory=target/dependency
 cd ..
 
 mkdir -p plugins/redis-sink
