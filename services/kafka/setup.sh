@@ -61,23 +61,23 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Cloning and building redis-batch (v7.4 tag) with Maven..."
-git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git tmp-redis-kafka-connect
+echo "[+] Cloning and building andrecowie/redis-kafka-connect (master branch) with Gradle..."
+git clone --depth 1 https://github.com/andrecowie/redis-kafka-connect.git tmp-redis-kafka-connect
 
 cd tmp-redis-kafka-connect
 
-# Use Maven wrapper if present, else fallback to system Maven
-if [ -f ./mvnw ]; then
-  ./mvnw clean package -DskipTests
+# Build with Gradle (use wrapper if present, else fallback to system gradle)
+if [ -f ./gradlew ]; then
+  ./gradlew clean shadowJar
 else
-  mvn clean package -DskipTests
+  gradle clean shadowJar
 fi
 
 cd ..
 
 # Copy the resulting JAR to the plugins directory
 mkdir -p plugins/redis-sink
-cp tmp-redis-kafka-connect/target/redis-kafka-connect-*.jar plugins/redis-sink/
+cp tmp-redis-kafka-connect/build/libs/redis-kafka-connect-*-all.jar plugins/redis-sink/
 
 rm -rf tmp-redis-kafka-connect
 
