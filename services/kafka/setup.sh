@@ -75,14 +75,22 @@ echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 PLUGIN_DIR="plugins/redis-sink"
 mkdir -p "$PLUGIN_DIR"
 NETTY_VERSION="4.1.109.Final"
-wget -nv -O "$PLUGIN_DIR/netty-transport-native-unix-common-$NETTY_VERSION.jar" \
-  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common/$NETTY_VERSION/netty-transport-native-unix-common-$NETTY_VERSION.jar"
-wget -nv -O "$PLUGIN_DIR/netty-transport-native-epoll-$NETTY_VERSION.jar" \
-  "https://repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/$NETTY_VERSION/netty-transport-native-epoll-$NETTY_VERSION.jar"
 
-# (Optional) If you want to force Linux native classifier (sometimes needed):
-# wget -nv -O "$PLUGIN_DIR/netty-transport-native-epoll-$NETTY_VERSION-linux-x86_64.jar" \
-#   "https://repo1.maven.org/maven2/io/netty/netty-transport-native-epoll/$NETTY_VERSION/netty-transport-native-epoll-$NETTY_VERSION-linux-x86_64.jar"
+wget -nv -O "$PLUGIN_DIR/netty-handler-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-handler/$NETTY_VERSION/netty-handler-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-buffer-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-buffer/$NETTY_VERSION/netty-buffer-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-common-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-common/$NETTY_VERSION/netty-common-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-codec-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-codec/$NETTY_VERSION/netty-codec-$NETTY_VERSION.jar"
+
+wget -nv -O "$PLUGIN_DIR/netty-transport-$NETTY_VERSION.jar" \
+  "https://repo1.maven.org/maven2/io/netty/netty-transport/$NETTY_VERSION/netty-transport-$NETTY_VERSION.jar"
+
 
 echo "Netty native JARs installed in $PLUGIN_DIR"
 echo "[+] Netty JARs downloaded."
