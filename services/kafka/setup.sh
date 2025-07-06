@@ -71,7 +71,7 @@ cd ..
 
 mkdir -p plugins/redis-sink
 # The main jar is inside the core/redis-kafka-connect/build/libs directory (multi-module project)
-cp tmp-redis-kafka-connect/core/redis-kafka-connect/build/libs/*.jar plugins/redis-sink/
+cp tmp-redis-kafka-connect/core/redis-kafka-connect/build/libs/*-all.jar plugins/redis-sink/
 
 rm -rf tmp-redis-kafka-connect
 
