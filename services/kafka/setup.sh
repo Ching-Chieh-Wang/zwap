@@ -61,18 +61,21 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Cloning andrecowie/redis-kafka-connect from GitHub..."
-git clone --depth 1 https://github.com/andrecowie/redis-kafka-connect.git tmp-redis-kafka-connect
+echo "[+] Cloning Ching-Chieh-Wang/redis-kafka-connect from GitHub..."
+rm -rf tmp-redis-kafka-connect
+git clone --depth 1 https://github.com/Ching-Chieh-Wang/redis-kafka-connect.git tmp-redis-kafka-connect
 
 cd tmp-redis-kafka-connect
 ./gradlew clean build -x test
 cd ..
 
 mkdir -p plugins/redis-sink
+# The main jar is inside the core/redis-kafka-connect/build/libs directory (multi-module project)
 cp tmp-redis-kafka-connect/core/redis-kafka-connect/build/libs/*.jar plugins/redis-sink/
 
 rm -rf tmp-redis-kafka-connect
 
+echo "[+] Built redis sink connector copied to plugins/redis-sink."
 
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
