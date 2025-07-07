@@ -66,7 +66,7 @@ rm -rf tmp-redis-kafka-connect
 git clone --depth 1 https://github.com/Ching-Chieh-Wang/redis-kafka-connect.git tmp-redis-kafka-connect
 
 cd tmp-redis-kafka-connect
-./gradlew clean build -x test
+./gradlew :core:redis-kafka-connect:clean :core:redis-kafka-connect:build -x test
 cd ..
 
 mkdir -p plugins/redis-sink
