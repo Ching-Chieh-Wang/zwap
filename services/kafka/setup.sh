@@ -63,9 +63,6 @@ echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
 echo "[+] Cloning Redis Kafka Connect repo with tag v7.4..."
 git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git
-git fetch --tags
-git checkout v7.4
-
 
 echo "[+] Building Redis Kafka Connect connector..."
 cd redis-kafka-connect
