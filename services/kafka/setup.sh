@@ -66,7 +66,7 @@ git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/red
 
 echo "[+] Building Redis Kafka Connect connector..."
 cd tmp-redis-sink/redis-kafka-connect
-mvn clean package
+mvn clean package -Dmaven.test.skip=true --no-transfer-progress
 cd ../../
 
 echo "[+] Copying all connector JARs to plugins/redis-sink..."
