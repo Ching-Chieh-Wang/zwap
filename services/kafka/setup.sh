@@ -61,22 +61,15 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Cloning Ching-Chieh-Wang/redis-kafka-connect from GitHub..."
-rm -rf tmp-redis-kafka-connect
-git clone --depth 1 https://github.com/Ching-Chieh-Wang/redis-kafka-connect.git tmp-redis-kafka-connect
+echo "[+] Downloading Redis sink connector (0.9.1)..."
+curl -sSL -o redis.zip \
+  https://hub-downloads.confluent.io/api/plugins/jcustenborder/kafka-connect-redis/versions/0.0.8/jcustenborder-kafka-connect-redis-0.0.8.zip
 
-cd tmp-redis-kafka-connect
-./gradlew clean build -x test
-cd ..
-
-mkdir -p plugins/redis-sink
-# The main jar is inside the core/redis-kafka-connect/build/libs directory (multi-module project)
-cp tmp-redis-kafka-connect/core/redis-kafka-connect/build/libs/*-all.jar plugins/redis-sink/
-
-rm -rf tmp-redis-kafka-connect
-
-echo "[+] Built redis sink connector copied to plugins/redis-sink."
-
+unzip -qo redis.zip -d tmp-redis
+cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
+   plugins/redis-sink/
+rm -rf tmp-redis redis.zip
+echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
