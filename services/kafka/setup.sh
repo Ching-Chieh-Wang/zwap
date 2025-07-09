@@ -71,7 +71,7 @@ cd ../../
 
 echo "[+] Copying all connector JARs to plugins/redis-sink..."
 mkdir -p plugins/redis-sink
-cp mp-redis-sink/redis-kafka-connect/target/*.jar \
+cp tmp-redis-sink/redis-kafka-connect/target/*.jar \
    plugins/redis-sink/ ;
 
 rm -rf tmp-redis-sink
