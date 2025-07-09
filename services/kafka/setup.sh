@@ -71,7 +71,8 @@ cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
 rm -rf tmp-redis redis.zip
 
 # --- Add Netty fat-jar so Lettuce can load io.netty.handler.ssl.SslProvider
-NETTY_VERSION=4.1.109.Final
+# --- Add Netty fat-jar so Lettuce can load io.netty.handler.ssl.SslProvider
+NETTY_VERSION=4.1.63.Final
 curl -sSL -o netty-all-${NETTY_VERSION}.jar \
   https://repo1.maven.org/maven2/io/netty/netty-all/${NETTY_VERSION}/netty-all-${NETTY_VERSION}.jar
 mv netty-all-${NETTY_VERSION}.jar plugins/redis-sink/
