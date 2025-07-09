@@ -61,24 +61,22 @@ cp tmp-debezium/debezium-connector-mongodb/*.jar \
 rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
-echo "[+] Downloading Redis sink connector (0.9.1)..."
-curl -sSL -o redis.zip \
-  https://hub-downloads.confluent.io/api/plugins/jcustenborder/kafka-connect-redis/versions/0.0.8/jcustenborder-kafka-connect-redis-0.0.8.zip
+echo "[+] Cloning Redis Kafka Connect repo with tag v7.4..."
+git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git
+git fetch --tags
+git checkout v7.4
 
-unzip -qo redis.zip -d tmp-redis
-cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
-   plugins/redis-sink/
-rm -rf tmp-redis redis.zip
 
-# --- Add Netty fat-jar so Lettuce can load io.netty.handler.ssl.SslProvider
-# --- Add Netty fat-jar so Lettuce can load io.netty.handler.ssl.SslProvider
-NETTY_VERSION=4.1.63.Final
-curl -sSL -o netty-all-${NETTY_VERSION}.jar \
-  https://repo1.maven.org/maven2/io/netty/netty-all/${NETTY_VERSION}/netty-all-${NETTY_VERSION}.jar
-mv netty-all-${NETTY_VERSION}.jar plugins/redis-sink/
-echo "[+] netty-all ${NETTY_VERSION} JAR copied to plugins/redis-sink."
+echo "[+] Building Redis Kafka Connect connector..."
+cd redis-kafka-connect
+./mvnw clean package
 
-echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
+echo "[+] Copying all connector JARs to kafka/plugins/redis-sink..."
+mkdir -p ../kafka/plugins/redis-sink
+find ./target -name "*.jar" -exec cp {} ../kafka/plugins/redis-sink/ \;
+
+echo "[+] Redis Kafka Connect JARs copied to kafka/plugins/redis-sink."
+cd ..
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
@@ -92,3 +90,4 @@ rm -rf tmp-elasticsearch elasticsearch.zip
 echo "[+] Elasticsearch sink connector JARs copied to plugins/elasticsearch-sink."
 
 echo "[+] Setup complete."
+
