@@ -69,6 +69,14 @@ unzip -qo redis.zip -d tmp-redis
 cp tmp-redis/jcustenborder-kafka-connect-redis-0.0.8/lib/*.jar \
    plugins/redis-sink/
 rm -rf tmp-redis redis.zip
+
+# --- Add Netty fat-jar so Lettuce can load io.netty.handler.ssl.SslProvider
+NETTY_VERSION=4.1.109.Final
+curl -sSL -o netty-all-${NETTY_VERSION}.jar \
+  https://repo1.maven.org/maven2/io/netty/netty-all/${NETTY_VERSION}/netty-all-${NETTY_VERSION}.jar
+mv netty-all-${NETTY_VERSION}.jar plugins/redis-sink/
+echo "[+] netty-all ${NETTY_VERSION} JAR copied to plugins/redis-sink."
+
 echo "[+] Redis sink connector JARs copied to plugins/redis-sink."
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
