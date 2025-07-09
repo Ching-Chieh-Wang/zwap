@@ -65,11 +65,14 @@ echo "[+] Cloning Redis Kafka Connect repo with tag v7.4..."
 git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git tmp-redis-sink/redis-kafka-connect
 
 echo "[+] Building Redis Kafka Connect connector..."
+cd tmp-redis-sink/redis-kafka-connect
 mvn clean package
+cd ../../
 
 echo "[+] Copying all connector JARs to plugins/redis-sink..."
 mkdir -p plugins/redis-sink
-find tmp-redis-sink/redis-kafka-connect/target -name "*.jar" -exec cp {} plugins/redis-sink/ \;
+cp mp-redis-sink/redis-kafka-connect/target/*.jar \
+   plugins/redis-sink/ ;
 
 rm -rf tmp-redis-sink
 echo "[+] Redis Kafka Connect JARs copied to kafka/plugins/redis-sink."
