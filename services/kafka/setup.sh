@@ -62,18 +62,17 @@ rm -rf tmp-debezium debezium-mongodb.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
 
 echo "[+] Cloning Redis Kafka Connect repo with tag v7.4..."
-git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git
+git clone --branch v7.4 --depth 1 https://github.com/redis-field-engineering/redis-kafka-connect.git tmp-redis-sink/redis-kafka-connect
 
 echo "[+] Building Redis Kafka Connect connector..."
-cd redis-kafka-connect
-./mvnw clean package
+tmp-redis-sink/redis-kafka-connect/mvnw clean package
 
-echo "[+] Copying all connector JARs to kafka/plugins/redis-sink..."
-mkdir -p ../kafka/plugins/redis-sink
-find ./target -name "*.jar" -exec cp {} ../kafka/plugins/redis-sink/ \;
+echo "[+] Copying all connector JARs to plugins/redis-sink..."
+mkdir -p plugins/redis-sink
+find tmp-redis-sink/redis-kafka-connect/target -name "*.jar" -exec cp {} plugins/redis-sink/ \;
 
+rm -rf tmp-redis-sink
 echo "[+] Redis Kafka Connect JARs copied to kafka/plugins/redis-sink."
-cd ..
 
 echo "[+] Downloading Elasticsearch sink connector (15.0.0)..."
 curl -sSL -o elasticsearch.zip \
