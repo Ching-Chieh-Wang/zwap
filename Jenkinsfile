@@ -152,6 +152,7 @@ pipeline {
                             set -e
                             cd zwap/services/kafka
                             nohup ./run_kafka.sh > kafka.log 2>&1 &
+                            export KAFKA_PID=\$!
                         '
                     """
                 }
@@ -167,6 +168,7 @@ pipeline {
                             cd zwap/services/kafka
                             export LOG4J_CONFIGURATION_FILE=/opt/bitnami/kafka/config/log4j2.yaml
                             nohup ./run_connector.sh > connector.log 2>&1 &
+                            export CONNECTOR_PID=\$!
                         '
                     """
                 }
@@ -186,7 +188,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            if ss -tulwn | grep ":50003"; then
+                            if [ -n "\$KAFKA_PID" ] && ps -p \$KAFKA_PID > /dev/null; then
                                 echo "[Kafka Health] Kafka is running on port 50003"
                             else
                                 echo "[Kafka Health] Kafka is NOT running on port 50003"
@@ -206,7 +208,7 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            if ss -tulwn | grep ":50001"; then
+                            if [ -n "\$CONNECTOR_PID" ] && ps -p \$CONNECTOR_PID > /dev/null; then
                                 echo "[Connector Health] Connector is running on port 50001"
                             else
                                 echo "[Connector Health] Connector is NOT running on port 50001"
