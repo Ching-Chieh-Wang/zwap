@@ -152,7 +152,7 @@ pipeline {
                             set -e
                             cd zwap/services/kafka
                             nohup ./run_kafka.sh > kafka.log 2>&1 &
-                            export KAFKA_PID=\$!
+                            echo "[Kafka Start] Kafka started with PID \$!"
                         '
                     """
                 }
@@ -168,7 +168,7 @@ pipeline {
                             cd zwap/services/kafka
                             export LOG4J_CONFIGURATION_FILE=/opt/bitnami/kafka/config/log4j2.yaml
                             nohup ./run_connector.sh > connector.log 2>&1 &
-                            export CONNECTOR_PID=\$!
+                            echo "[Connector Start] Connector started with PID \$!"
                         '
                     """
                 }
@@ -188,10 +188,11 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            if [ -n "\$KAFKA_PID" ] && ps -p \$KAFKA_PID > /dev/null; then
-                                echo "[Kafka Health] Kafka is running on port 50003"
+                            PID=\$(pgrep -f run_kafka.sh | head -n1)
+                            if [ -n "\$PID" ] && ps -p \$PID > /dev/null; then
+                                echo "[Kafka Health] Kafka is running with PID \$PID"
                             else
-                                echo "[Kafka Health] Kafka is NOT running on port 50003"
+                                echo "[Kafka Health] Kafka is NOT running"
                                 echo "[Kafka Health] Showing kafka.log  for debugging:"
                                 cat zwap/services/kafka/kafka.log || true
                                 exit 1
@@ -208,10 +209,11 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                             set -e
-                            if [ -n "\$CONNECTOR_PID" ] && ps -p \$CONNECTOR_PID > /dev/null; then
-                                echo "[Connector Health] Connector is running on port 50001"
+                            PID=\$(pgrep -f run_connector.sh | head -n1)
+                            if [ -n "\$PID" ] && ps -p \$PID > /dev/null; then
+                                echo "[Connector Health] Connector is running with PID \$PID"
                             else
-                                echo "[Connector Health] Connector is NOT running on port 50001"
+                                echo "[Connector Health] Connector is NOT running"
                                 echo "[Connector Health] Showing connector.log  for debugging:"
                                 cat zwap/services/kafka/connector.log || true
                                 exit 1
