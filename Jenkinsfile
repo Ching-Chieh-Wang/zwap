@@ -224,4 +224,19 @@ pipeline {
             }
         }
     }
+    post {
+        always {
+            echo 'Cleaning up workspace...'
+            sshagent([env.SSH_KEY]) {
+                sh """
+                    ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
+                        set -e
+                        rm -rf ~/zwap/services/kafka/plugins
+                        echo "[Post Cleanup] Removed plugins folder from linux-084"
+                    '
+                """
+            }
+            cleanWs()
+        }
+    }
 }
