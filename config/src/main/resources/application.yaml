@@ -1,9 +1,21 @@
 server:
-  port: 8888
+  port: 50013
 spring:
+  config:
+    import : vault://
   application:
-    name: config-server
+    name: config-service
   cloud:
+    vault:
+      authentication: TOKEN
+      token : ${VAULT_TOKEN}
+      scheme: http
+      host: linux-076
+      port: 50006
+      fail-fast: true
+      kv:
+        default-context: config-service
+        profiles:
     config:
       server:
         git:
@@ -12,19 +24,3 @@ spring:
           password: ${GITHUB_TOKEN}
           skipSslValidation: true
           clone-on-start: true
-eureka:
-  client:
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: ${EUREKA_SERVER_URL}/eureka
-  instance:
-    prefer-ip-address: false
-    hostname: ${SERVER_HOST}
-    secure-port-enabled: true
-    non-secure-port-enabled: false
-    secure-port: 443
-    non-secure-port: 80
-    home-page-url: https://${SERVER_HOST}
-    health-check-url: https://${SERVER_HOST}/actuator/health
-    status-page-url: https://${SERVER_HOST}/actuator/info

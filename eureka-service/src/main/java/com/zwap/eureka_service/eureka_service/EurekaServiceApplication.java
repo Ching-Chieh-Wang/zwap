@@ -8,8 +8,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableEurekaServer
-@EnableDiscoveryClient
-@EnableScheduling
 public class EurekaServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(EurekaServiceApplication.class, args);
