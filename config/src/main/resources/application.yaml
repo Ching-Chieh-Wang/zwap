@@ -2,25 +2,31 @@ server:
   port: 50013
 spring:
   config:
-    import : vault://
+    import: vault://
+  profiles:
+    active: vault, git
   application:
     name: config-service
   cloud:
     vault:
-      authentication: TOKEN
-      token : ${VAULT_TOKEN}
+      host: ${VAULT_SERVICE_HOST}
+      port: ${VAULT_SERVICE_PORT}
       scheme: http
-      host: linux-076
-      port: 50006
-      fail-fast: true
+      authentication: TOKEN
+      token: ${VAULT_SERVICE_TOKEN}
       kv:
-        default-context: config-service
         profiles:
     config:
       server:
+        vault:
+          host: ${VAULT_SERVICE_HOST}
+          port: ${VAULT_SERVICE_PORT}
+          kvVersion: 2
+          default-key:
+          order: 1
+
         git:
-          uri: ${CONFIG_REPO_URL}
-          username: ${GITHUB_USERNAME}
-          password: ${GITHUB_TOKEN}
-          skipSslValidation: true
-          clone-on-start: true
+          uri: ${GIT_CONFIG_REPO_URI}
+          username: ${GIT_CONFIG_REPO_USERNAME}
+          password: ${GIT_CONFIG_REPO_PASSWORD}
+          order: 2
