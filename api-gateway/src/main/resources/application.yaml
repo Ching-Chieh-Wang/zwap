@@ -2,4 +2,5 @@ spring:
   application:
     name: api-gateway
   config:
-    import: optional:configserver:${CONFIG_SERVER_URL},optional:classpath:.env
+    import:
+      configserver:${CONFIG_SERVICE_URI}
