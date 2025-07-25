@@ -1,6 +1,8 @@
 spring:
   application:
-    name: api-gateway
+    name: api-gateway-service
   config:
-    import:
-      configserver:${CONFIG_SERVICE_URI}
+    import: configserver:${CONFIG_SERVICE_URI}
+  cloud:
+    config:
+      token: ${VAULT_SERVICE_TOKEN}
