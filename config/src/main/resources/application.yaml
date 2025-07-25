@@ -4,7 +4,7 @@ spring:
   config:
     import: vault://
   profiles:
-    active: vault, git
+    active: vault, git, default
   application:
     name: config-service
   cloud:
@@ -22,8 +22,9 @@ spring:
           host: ${VAULT_SERVICE_HOST}
           port: ${VAULT_SERVICE_PORT}
           kvVersion: 2
-          default-key:
+          default-key: application
           order: 1
+          profile-separator: '?profile='
 
         git:
           uri: ${GIT_CONFIG_REPO_URI}
