@@ -34,8 +34,5 @@ bootstrap.yml
 bootstrap.properties
 
 # Environment
-.env
-.env.production
-env.properties
 *.local.yml
 *.local.properties
