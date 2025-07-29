@@ -9,21 +9,26 @@ pipeline {
         VAULT_SERVICE_URI = 'http://linux-076:50006'
     }
 
-    triggers {
-        GenericTrigger(
-            genericVariables: [
-                [key: 'modified_files', value: '$.commits[*].modified[*]', expressionType: 'JSONPath'],
-                [key: 'added_files', value: '$.commits[*].added[*]', expressionType: 'JSONPath'],
-                [key: 'removed_files', value: '$.commits[*].removed[*]', expressionType: 'JSONPath']
-            ],
-            causeString: 'Triggered on changes to: \$modified_files \$added_files \$removed_files',
-            token: 'xiuxiulovejingjie',
-            printContributedVariables: false,
-            printPostContent: false,
-            regexpFilterText: '\$modified_files \$added_files \$removed_files',
-            regexpFilterExpression: '^services/kafka/.*'
-        )
+triggers {
+    genericWebhook {
+        token 'xiuxiulovejingjie'
+
+        postContent {
+            jsonPathFilter {
+                variable 'changed_files'
+                expression '$.commits[*].[\'modified\',\'added\',\'removed\'][*]'
+            }
+        }
+
+        regexpFilter {
+            text '$changed_files'
+            expression '.*services/kafka/.*'
+        }
+
+        printContributedVariables false
+        printPostContent false
     }
+}
 
     options {
         skipDefaultCheckout()
