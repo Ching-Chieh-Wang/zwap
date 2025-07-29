@@ -23,9 +23,11 @@ touch connect.offsets
 
 echo "[+] Resolving config templates with env vars..."
 
+SUBST_VARS='$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT'
 echo "    - mongodb-connector-template → mongodb-connector.properties"
-envsubst < config/mongodb-connector-template.properties \
-         > config/mongodb-connector.properties
+envsubst "$SUBST_VARS" \
+  < config/mongodb-connector-template.properties \
+  > config/mongodb-connector.properties
 
 echo "    - redis-connector-template → redis-connector.properties"
 envsubst < config/redis-connector-template.properties \
