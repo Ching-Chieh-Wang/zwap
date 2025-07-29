@@ -112,11 +112,11 @@ pipeline {
                             [envVar: 'PRODUCT_MONGODB_SERVICE_URI', vaultKey: 'PRODUCT_MONGODB_SERVICE_URI']
                         ]],
                         [path: 'secret/product/redis', secretValues: [
-                            [envVar: 'PRODUCT_REDIS_URI', vaultKey: 'PRODUCT_REDIS_URI']
+                            [envVar: 'PRODUCT_REDIS_SERVICE_URI', vaultKey: 'PRODUCT_REDIS_SERVICE_URI']
                         ]],
                         [path: 'secret/product/elasticsearch', secretValues: [
-                            [envVar: 'PRODUCT_ELASTIC_USERNAME', vaultKey: 'PRODUCT_ELASTIC_USERNAME'],
-                            [envVar: 'PRODUCT_ELASTIC_PASSWORD', vaultKey: 'PRODUCT_ELASTIC_PASSWORD']
+                            [envVar: 'PRODUCT_ELASTICSEARCH_SERVICE_USERNAME', vaultKey: 'PRODUCT_ELASTICSEARCH_SERVICE_USERNAME'],
+                            [envVar: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD', vaultKey: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD']
                         ]]
                     ]
                 ]) {
