@@ -9,25 +9,27 @@ pipeline {
         VAULT_SERVICE_URI = 'http://linux-076:50006'
     }
 
+
     triggers {
-        GenericWebhook {
-            token 'xiuxiulovejingjie'
+        genericWebhook(
+            token: 'xiuxiulovejingjie', // <--- Use colon ':' for named parameters
 
-            postContent {
-                jsonPathFilter {
-                    variable 'changed_files'
-                    expression '$.commits[*].[\'modified\',\'added\',\'removed\'][*]'
-                }
-            }
+            // postContent and regexpFilter are complex objects that also use named parameters
+            postContent: [
+                jsonPathFilter: [
+                    variable: 'changed_files',
+                    expression: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]'
+                ]
+            ],
 
-            regexpFilter {
-                text '$changed_files'
-                expression '.*services/kafka/.*'
-            }
+            regexpFilter: [
+                text: '$changed_files',
+                expression: '.*services/kafka/.*'
+            ],
 
-            printContributedVariables false
-            printPostContent false
-        }
+            printContributedVariables: false,
+            printPostContent: false
+        )
     }
 
     options {
