@@ -24,8 +24,7 @@ touch connect.offsets
 echo "[+] Resolving config templates with env vars..."
 
 # 1) MongoDB connector needs limited envsubst so $Key/$Value survive
-SUBST_VARS='$MONGO_URI $MONGO_DATABASE_INCLUDE_LIST $MONGO_TOPIC_PREFIX \
-$MONGO_SNAPSHOT_MODE $KAFKA_HOST $KAFKA_BROKER_PORT $MONGO_HISTORY_TOPIC'
+SUBST_VARS='$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT'
 echo "    - mongodb-connector-template → mongodb-connector.properties"
 envsubst "$SUBST_VARS" \
   < config/mongodb-connector-template.properties \
