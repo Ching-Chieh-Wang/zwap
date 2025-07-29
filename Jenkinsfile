@@ -6,21 +6,21 @@ pipeline {
         HOST_KAFKA = 'immactavish@linux-085'
         HOST_CONNECTOR = 'immactavish@linux-084'
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
+        VAULT_SERVICE_URI = 'http://linux-076:50006'
     }
 
     triggers {
         GenericTrigger(
             genericVariables: [
-                [key: 'modified_files', value: '\$.commits[*].modified[*]', expressionType: 'JSONPath'],
-                [key: 'added_files', value: '\$.commits[*].added[*]', expressionType: 'JSONPath'],
-                [key: 'removed_files', value: '\$.commits[*].removed[*]', expressionType: 'JSONPath'],
-                [key: 'changed_file', value: '\$.commits[0].modified[0]', expressionType: 'JSONPath']
+                [key: 'modified_files', value: '$.commits[*].modified[*]', expressionType: 'JSONPath'],
+                [key: 'added_files', value: '$.commits[*].added[*]', expressionType: 'JSONPath'],
+                [key: 'removed_files', value: '$.commits[*].removed[*]', expressionType: 'JSONPath']
             ],
             causeString: 'Triggered on changes to: \$modified_files \$added_files \$removed_files',
             token: 'xiuxiulovejingjie',
-            printContributedVariables: true,
-            printPostContent: true,
-            regexpFilterText: '\$changed_file',
+            printContributedVariables: false,
+            printPostContent: false,
+            regexpFilterText: '\$modified_files \$added_files \$removed_files',
             regexpFilterExpression: '^services/kafka/.*'
         )
     }
@@ -104,14 +104,26 @@ pipeline {
             }
         }
 
-        stage('Copy .env to Kafka') {
+        stage('Render .env from Vault and Upload') {
             steps {
-                sshagent([env.SSH_KEY]) {
-                    withCredentials([file(credentialsId: 'kafka-env-file', variable: 'KAFKA_ENV_FILE')]) {
-                        sh """
-                            scp -o StrictHostKeyChecking=no "\${KAFKA_ENV_FILE}" "\${HOST_KAFKA}:~/zwap/services/kafka/.env"
-                        """
-                    }
+                withVault([
+                    vaultSecrets: [
+                        [path: 'secret/product/mongo', secretValues: [
+                            [envVar: 'PRODUCT_MONGODB_SERVICE_URI', vaultKey: 'PRODUCT_MONGODB_SERVICE_URI']
+                        ]],
+                        [path: 'secret/product/redis', secretValues: [
+                            [envVar: 'PRODUCT_REDIS_URI', vaultKey: 'PRODUCT_REDIS_URI']
+                        ]],
+                        [path: 'secret/product/elasticsearch', secretValues: [
+                            [envVar: 'PRODUCT_ELASTIC_USERNAME', vaultKey: 'PRODUCT_ELASTIC_USERNAME'],
+                            [envVar: 'PRODUCT_ELASTIC_PASSWORD', vaultKey: 'PRODUCT_ELASTIC_PASSWORD']
+                        ]]
+                    ]
+                ]) {
+                    sh '''
+                        envsubst < zwap/services/kafka/.env.template > zwap/services/kafka/.env
+                        scp -o StrictHostKeyChecking=no zwap/services/kafka/.env ${HOST_KAFKA}:~/zwap/services/kafka/.env
+                    '''
                 }
             }
         }
