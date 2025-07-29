@@ -19,7 +19,7 @@ public class ProductController {
     private ProductMapper productMapper;
 
     @PostMapping("/")
-    public Product create(@RequestHeader("userId") String userId, @RequestBody ProductCreateDTO productDTO) {
+    public Product create(@RequestHeader("user_id") String userId, @RequestBody ProductCreateDTO productDTO) {
         Product product = ProductConverter.toEntity(productDTO, userId);
         productMapper.save(product);
         return product;

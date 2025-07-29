@@ -25,7 +25,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
 
                         ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                                .header("user-id", uid)
+                                .header("user_id", uid)
                                 .build();
                         ServerWebExchange mutatedExchange = exchange.mutate()
                                 .request(mutatedRequest)
