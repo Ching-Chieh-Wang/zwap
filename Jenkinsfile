@@ -108,7 +108,7 @@ pipeline {
             steps {
                 withVault([
                     vaultSecrets: [
-                        [path: 'secret/product/mongo', secretValues: [
+                        [path: 'secret/product/mongodb', secretValues: [
                             [envVar: 'PRODUCT_MONGODB_SERVICE_URI', vaultKey: 'PRODUCT_MONGODB_SERVICE_URI']
                         ]],
                         [path: 'secret/product/redis', secretValues: [
