@@ -171,7 +171,8 @@ pipeline {
                             set -e
                             cd zwap/services/kafka
                             nohup ./run_kafka.sh > kafka.log 2>&1 &
-                            echo "[Kafka Start] Kafka started with PID \$!"
+                            echo \$! > kafka.pid
+                            echo "[Kafka Start] Kafka started with PID \$(cat kafka.pid)"
                         '
                     """
                 }
@@ -187,7 +188,8 @@ pipeline {
                             cd zwap/services/kafka
                             export LOG4J_CONFIGURATION_FILE=/opt/bitnami/kafka/config/log4j2.yaml
                             nohup ./run_connector.sh > connector.log 2>&1 &
-                            echo "[Connector Start] Connector started with PID \$!"
+                            echo \$! > connector.pid
+                            echo "[Connector Start] Connector started with PID \$(cat connector.pid)"
                         '
                     """
                 }
@@ -207,13 +209,18 @@ pipeline {
                     sh """
                         ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
                             set -e
-                            PID=\$(pgrep -f run_kafka.sh | head -n1)
-                            if [ -n "\$PID" ] && ps -p \$PID > /dev/null; then
-                                echo "[Kafka Health] Kafka is running with PID \$PID"
+                            cd zwap/services/kafka
+                            if [ -f kafka.pid ]; then
+                                PID=\$(cat kafka.pid)
+                                if ps -p \$PID > /dev/null; then
+                                    echo "[Kafka Health] Kafka is running with PID \$PID"
+                                else
+                                    echo "[Kafka Health] PID \$PID not running"
+                                    cat kafka.log || true
+                                    exit 1
+                                fi
                             else
-                                echo "[Kafka Health] Kafka is NOT running"
-                                echo "[Kafka Health] Showing kafka.log  for debugging:"
-                                cat zwap/services/kafka/kafka.log || true
+                                echo "[Kafka Health] kafka.pid file not found"
                                 exit 1
                             fi
                         '
@@ -222,27 +229,32 @@ pipeline {
             }
         }
 
-        stage('Verify Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
-                            set -e
-                            PID=\$(pgrep -f run_connector.sh | head -n1)
-                            if [ -n "\$PID" ] && ps -p \$PID > /dev/null; then
+    stage('Verify Connector (084)') {
+        steps {
+            sshagent([env.SSH_KEY]) {
+                sh """
+                    ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
+                        set -e
+                        cd zwap/services/kafka
+                        if [ -f connector.pid ]; then
+                            PID=\$(cat connector.pid)
+                            if ps -p \$PID > /dev/null; then
                                 echo "[Connector Health] Connector is running with PID \$PID"
                             else
-                                echo "[Connector Health] Connector is NOT running"
-                                echo "[Connector Health] Showing connector.log  for debugging:"
-                                cat zwap/services/kafka/connector.log || true
+                                echo "[Connector Health] PID \$PID not running"
+                                cat connector.log || true
                                 exit 1
                             fi
-                        '
-                    """
-                }
+                        else
+                            echo "[Connector Health] connector.pid file not found"
+                            exit 1
+                        fi
+                    '
+                """
             }
         }
     }
+
     post {
         always {
             echo 'Cleaning up workspace...'
