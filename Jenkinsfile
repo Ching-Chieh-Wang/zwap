@@ -121,7 +121,7 @@ pipeline {
                     ]
                 ]) {
                     sh '''
-                        envsubst < zwap/services/kafka/.env.template > zwap/services/kafka/.env
+                        envsubst < ~/zwap/services/kafka/.env.template > ~/zwap/services/kafka/.env
                         scp -o StrictHostKeyChecking=no zwap/services/kafka/.env ${HOST_KAFKA}:~/zwap/services/kafka/.env
                     '''
                 }
