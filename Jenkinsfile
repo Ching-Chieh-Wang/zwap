@@ -9,26 +9,26 @@ pipeline {
         VAULT_SERVICE_URI = 'http://linux-076:50006'
     }
 
-triggers {
-    genericWebhook {
-        token 'xiuxiulovejingjie'
+    triggers {
+        GenericWebhook {
+            token 'xiuxiulovejingjie'
 
-        postContent {
-            jsonPathFilter {
-                variable 'changed_files'
-                expression '$.commits[*].[\'modified\',\'added\',\'removed\'][*]'
+            postContent {
+                jsonPathFilter {
+                    variable 'changed_files'
+                    expression '$.commits[*].[\'modified\',\'added\',\'removed\'][*]'
+                }
             }
-        }
 
-        regexpFilter {
-            text '$changed_files'
-            expression '.*services/kafka/.*'
-        }
+            regexpFilter {
+                text '$changed_files'
+                expression '.*services/kafka/.*'
+            }
 
-        printContributedVariables false
-        printPostContent false
+            printContributedVariables false
+            printPostContent false
+        }
     }
-}
 
     options {
         skipDefaultCheckout()
