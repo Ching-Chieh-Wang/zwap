@@ -229,28 +229,29 @@ pipeline {
             }
         }
 
-    stage('Verify Connector (084)') {
-        steps {
-            sshagent([env.SSH_KEY]) {
-                sh """
-                    ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
-                        set -e
-                        cd zwap/services/kafka
-                        if [ -f connector.pid ]; then
-                            PID=\$(cat connector.pid)
-                            if ps -p \$PID > /dev/null; then
-                                echo "[Connector Health] Connector is running with PID \$PID"
+        stage('Verify Connector (084)') {
+            steps {
+                sshagent([env.SSH_KEY]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
+                            set -e
+                            cd zwap/services/kafka
+                            if [ -f connector.pid ]; then
+                                PID=\$(cat connector.pid)
+                                if ps -p \$PID > /dev/null; then
+                                    echo "[Connector Health] Connector is running with PID \$PID"
+                                else
+                                    echo "[Connector Health] PID \$PID not running"
+                                    cat connector.log || true
+                                    exit 1
+                                fi
                             else
-                                echo "[Connector Health] PID \$PID not running"
-                                cat connector.log || true
+                                echo "[Connector Health] connector.pid file not found"
                                 exit 1
                             fi
-                        else
-                            echo "[Connector Health] connector.pid file not found"
-                            exit 1
-                        fi
-                    '
-                """
+                        '
+                    """
+                }
             }
         }
     }
@@ -269,5 +270,4 @@ pipeline {
             }
             cleanWs()
         }
-    }
 }
