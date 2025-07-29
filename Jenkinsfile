@@ -11,29 +11,30 @@ pipeline {
 
 
     triggers {
-        genericWebhook(
-            token: 'xiuxiulovejingjie', // <--- Use colon ':' for named parameters
+        GenericTrigger( // <--- Changed to GenericTrigger (capital G)
+            token: 'xiuxiulovejingjie',
 
-            // postContent and regexpFilter are complex objects that also use named parameters
-            postContent: [
-                jsonPathFilter: [
-                    variable: 'changed_files',
-                    expression: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]'
+            // This replaces the 'postContent' block.
+            // We define the variables directly in 'genericVariables'.
+            genericVariables: [
+                [
+                    key: 'changed_files',
+                    value: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]',
+                    expressionType: 'JSONPath'
                 ]
             ],
 
-            regexpFilter: [
-                text: '$changed_files',
-                expression: '.*services/kafka/.*'
-            ],
+            // This replaces the 'regexpFilter' block.
+            // Text and expression are direct parameters.
+            regexpFilterText: '$changed_files',
+            regexpFilterExpression: '.*services/kafka/.*',
 
             printContributedVariables: false,
             printPostContent: false
-        )
-    }
 
-    options {
-        skipDefaultCheckout()
+            // Optional: You can also specify a custom cause string if desired.
+            // causeString: 'Generic Webhook Triggered by changes in Kafka Service'
+        )
     }
 
     stages {
