@@ -27,12 +27,12 @@ echo "[+] Resolving config templates with env vars..."
 SUBST_VARS='$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT'
 echo "    - mongodb-connector-template → mongodb-connector.properties"
 envsubst "$SUBST_VARS" \
-  < config/mongodb-connector-template.properties \
-  > config/mongodb-connector.properties
+  < config/product-mongodb-source-connector-template.properties \
+  > config/product-mongodb-source-connector.properties
 
 echo "    - redis-connector-template → redis-connector.properties"
-envsubst < config/redis-connector-template.properties \
-         > config/redis-connector.properties
+envsubst < config/product-redis-sink-connector-template.properties \
+         > config/product-redis-sink-connector.properties
 
 echo "    - connect-standalone-template → connect-standalone.properties"
 envsubst < config/connect-standalone-template.properties \
@@ -43,8 +43,8 @@ envsubst < config/kraft-broker-template.properties \
          > config/kraft-broker.properties
 
 echo "    - elasticsearch-connector-template → elasticsearch-connector.properties"
-envsubst < config/elasticsearch-connector-template.properties \
-        > config/elasticsearch-connector.properties
+envsubst < config/product-elasticsearch-sink-connector-template.properties \
+        > config/product-elasticsearch-sink-connector.properties
 
 echo "[+] All templates resolved."
 

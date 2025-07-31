@@ -27,9 +27,9 @@ elif [[ "$1" == "connector" ]]; then
   # Run connector in standalone mode with MongoDB and Redis connector configs
   exec /opt/bitnami/kafka/bin/connect-standalone.sh \
     /opt/bitnami/kafka/config/connect-standalone.properties \
-    /opt/bitnami/kafka/config/mongodb-connector.properties \
-    /opt/bitnami/kafka/config/redis-connector.properties \
-    /opt/bitnami/kafka/config/elasticsearch-connector.properties
+    /opt/bitnami/kafka/config/product-mongodb-source-connector.properties \
+    /opt/bitnami/kafka/config/product-redis-sink-connector.properties \
+    /opt/bitnami/kafka/config/product-elasticsearch-sink-connector.properties
 
 else
   echo "[!] Unknown or missing argument. Use one of: kafka | connector"
