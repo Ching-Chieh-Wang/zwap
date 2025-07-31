@@ -53,11 +53,11 @@ curl -sSL -o product-mongodb-source-connector.tar.gz \
   https://repo1.maven.org/maven2/io/debezium/debezium-connector-mongodb/3.1.2.Final/debezium-connector-mongodb-3.1.2.Final-plugin.tar.gz
 
 mkdir -p tmp-product-mongodb-source-connector
-tar -xzf product-mongodb-source-connector.tar.gz -C product-mongodb-source-connector
-cp product-mongodb-source-connector/debezium-connector-mongodb/*.jar \
+tar -xzf product-mongodb-source-connector.tar.gz -C tmp-product-mongodb-source-connector
+cp tmp-product-mongodb-source-connector/debezium-connector-mongodb/*.jar \
    plugins/product-mongodb-source-connector/
 rm -rf tmp-product-mongodb-source-connector product-mongodb-source-connector.tar.gz
-echo "[+] Debezium MongoDB connector JARs copied to plugins/debezium-mongodb."
+echo "[+] Debezium MongoDB connector JARs copied to plugins/product-mongodb-source-connector."
 
 echo "[+] Downloading MongoDB Kafka sink connector (2.0.0)..."
 curl -sSL -o mongodb-sink-connector.zip \
