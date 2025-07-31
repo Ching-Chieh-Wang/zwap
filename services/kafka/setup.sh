@@ -16,7 +16,7 @@ fi
 echo "[+] Cleaning up logs, meta, and plugins directories..."
 rm -rf logs/* meta/* plugins/*
 mkdir -p logs meta \
-         plugins/product-mongodb=sink-connector \
+         plugins/product-mongodb-sink-connector \
          plugins/product-mongodb-source-connector \
          plugins/redis-sink
 rm -f connect.offsets
