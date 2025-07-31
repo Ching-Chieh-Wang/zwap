@@ -60,13 +60,13 @@ rm -rf tmp-product-mongodb-source-connector product-mongodb-source-connector.tar
 echo "[+] Debezium MongoDB connector JARs copied to plugins/product-mongodb-source-connector."
 
 echo "[+] Downloading MongoDB Kafka sink connector (2.0.0)..."
-curl -sSL -o mongodb-sink-connector.zip \
+curl -sSL -o product-mongodb-sink-connector.zip \
   https://hub-downloads.confluent.io/api/plugins/mongodb/kafka-connect-mongodb/versions/2.0.0/mongodb-kafka-connect-mongodb-2.0.0.zip
 
-mkdir -p tmp-porduct-mongodb-sink-connector
-unzip -qo product-mongodb-sink-connector.zip -d tmp-porduct-mongodb-sink-connector
+mkdir -p tmp-product-mongodb-sink-connector
+unzip -qo product-mongodb-sink-connector.zip -d tmp-product-mongodb-sink-connector
 cp tmp-product-mongodb-sink-connector/mongodb-kafka-connect-mongodb-2.0.0/lib/*.jar \
-   plugins/porduct-mongodb-sink-connector/
+   plugins/product-mongodb-sink-connector/
 
 
 echo "[+] Downloading pre-built Redis Kafka Connect connector (v7.4)..."
