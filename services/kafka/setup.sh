@@ -63,10 +63,10 @@ echo "[+] Downloading MongoDB Kafka sink connector (2.0.0)..."
 curl -sSL -o mongodb-sink-connector.zip \
   https://hub-downloads.confluent.io/api/plugins/mongodb/kafka-connect-mongodb/versions/2.0.0/mongodb-kafka-connect-mongodb-2.0.0.zip
 
-mkdir -p tmp-mongodb-sink-connector
-unzip -qo mongodb-sink-connector.zip -d tmp-mongodb-sink-connector
-cp tmp-mongodb-sink-connector/mongodb-kafka-connect-mongodb-2.0.0/lib/*.jar \
-   plugins/mongodb-sink-connector/
+mkdir -p tmp-porduct-mongodb-sink-connector
+unzip -qo product-mongodb-sink-connector.zip -d tmp-porduct-mongodb-sink-connector
+cp tmp-product-mongodb-sink-connector/mongodb-kafka-connect-mongodb-2.0.0/lib/*.jar \
+   plugins/porduct-mongodb-sink-connector/
 
 
 echo "[+] Downloading pre-built Redis Kafka Connect connector (v7.4)..."
