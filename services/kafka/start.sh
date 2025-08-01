@@ -28,6 +28,7 @@ elif [[ "$1" == "connector" ]]; then
   exec /opt/bitnami/kafka/bin/connect-standalone.sh \
     /opt/bitnami/kafka/config/connect-standalone.properties \
     /opt/bitnami/kafka/config/product-mongodb-source-connector.properties \
+    /opt/bitnami/kafka/config/product-mongodb-sink-connector.properties \
     /opt/bitnami/kafka/config/product-redis-sink-connector.properties \
     /opt/bitnami/kafka/config/product-elasticsearch-sink-connector.properties
 
