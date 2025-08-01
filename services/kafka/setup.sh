@@ -25,28 +25,24 @@ touch connect.offsets
 echo "[+] Resolving config templates with env vars..."
 
 SUBST_VARS='$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT'
-echo "    - mongodb-connector-template → mongodb-connector.properties"
 envsubst "$SUBST_VARS" \
   < config/product-mongodb-source-connector-template.properties \
   > config/product-mongodb-source-connector.properties
 
-echo "    - redis-connector-template → redis-connector.properties"
+envsubst < config/product-mongodb-sink-connector-template.properties \
+         > config/product-mongodb-sink-connector.properties
+
 envsubst < config/product-redis-sink-connector-template.properties \
          > config/product-redis-sink-connector.properties
 
-echo "    - connect-standalone-template → connect-standalone.properties"
 envsubst < config/connect-standalone-template.properties \
          > config/connect-standalone.properties
 
-echo "    - kraft-broker-template → kraft-broker.properties"
 envsubst < config/kraft-broker-template.properties \
          > config/kraft-broker.properties
 
-echo "    - elasticsearch-connector-template → elasticsearch-connector.properties"
 envsubst < config/product-elasticsearch-sink-connector-template.properties \
         > config/product-elasticsearch-sink-connector.properties
-
-echo "[+] All templates resolved."
 
 echo "[+] Downloading Debezium MongoDB source connector (3.1.2.Final)..."
 curl -sSL -o product-mongodb-source-connector.tar.gz \
