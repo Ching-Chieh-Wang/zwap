@@ -29,9 +29,6 @@ envsubst "$SUBST_VARS" \
   < config/product-mongodb-source-connector-template.properties \
   > config/product-mongodb-source-connector.properties
 
-envsubst < config/product-mongodb-sink-connector-template.properties \
-         > config/product-mongodb-sink-connector.properties
-
 envsubst < config/product-redis-sink-connector-template.properties \
          > config/product-redis-sink-connector.properties
 
@@ -54,16 +51,6 @@ cp tmp-product-mongodb-source-connector/debezium-connector-mongodb/*.jar \
    plugins/product-mongodb-source-connector/
 rm -rf tmp-product-mongodb-source-connector product-mongodb-source-connector.tar.gz
 echo "[+] Debezium MongoDB connector JARs copied to plugins/product-mongodb-source-connector."
-
-echo "[+] Downloading MongoDB Kafka sink connector (2.0.0)..."
-curl -sSL -o product-mongodb-sink-connector.zip \
-  https://hub-downloads.confluent.io/api/plugins/mongodb/kafka-connect-mongodb/versions/2.0.0/mongodb-kafka-connect-mongodb-2.0.0.zip
-
-mkdir -p tmp-product-mongodb-sink-connector
-unzip -qo product-mongodb-sink-connector.zip -d tmp-product-mongodb-sink-connector
-cp tmp-product-mongodb-sink-connector/mongodb-kafka-connect-mongodb-2.0.0/lib/*.jar \
-   plugins/product-mongodb-sink-connector/
-
 
 echo "[+] Downloading pre-built Redis Kafka Connect connector (v7.4)..."
 mkdir -p plugins/redis-sink
