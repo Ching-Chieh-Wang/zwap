@@ -8,10 +8,8 @@ import lombok.Data;
 
 @Data
 public class ProductCreateQry {
-    @NotBlank
-    private String userId;
 
-    @NotBlank
+    @NotBlank(message = "title cannot be blank")
     @Size(max = 100)
     private String title;
 
@@ -20,15 +18,15 @@ public class ProductCreateQry {
 
     private String imagePath;
 
-    @NotNull
+    @NotNull(message = "price cannot be null")
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal price;
 
-    @NotNull
+    @NotNull(message = "quantity cannot be null")
     @Min(1)
     private Integer quantity;
 
-    @NotBlank
+    @NotBlank (message = "city cannot be blank")
     private String city;
 
     private String locationName;
@@ -36,9 +34,9 @@ public class ProductCreateQry {
     @NotBlank
     private String address;
 
-    @NotNull
+    @NotNull(message = "geoData cannot be null")
     private GeoData geoData;
 
-    @NotBlank
+    @NotBlank(message = "placeId cannot be blank")
     private String placeId; // Google Maps Place ID
 }
