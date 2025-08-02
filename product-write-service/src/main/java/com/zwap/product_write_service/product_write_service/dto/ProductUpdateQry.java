@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class ProductUpdateDTO {
+public class ProductUpdateQry {
     private String title;
     private String description;
     private String imagePath;
