@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class ProductCreateDTO {
+public class ProductCreateQry {
     @NotBlank
     private String userId;
 
