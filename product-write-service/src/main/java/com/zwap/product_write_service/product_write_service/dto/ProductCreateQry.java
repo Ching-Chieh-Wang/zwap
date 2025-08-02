@@ -3,6 +3,7 @@ package com.zwap.product_write_service.product_write_service.dto;
 import java.math.BigDecimal;
 
 import com.zwap.product_common.product_common.VO.GeoData;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -35,6 +36,7 @@ public class ProductCreateQry {
     private String address;
 
     @NotNull(message = "geoData cannot be null")
+    @Valid
     private GeoData geoData;
 
     @NotBlank(message = "placeId cannot be blank")
