@@ -3,15 +3,14 @@ package com.zwap.product_write_service.product_write_service.dto;
 import java.math.BigDecimal;
 
 import com.zwap.product_common.product_common.VO.GeoData;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-public class ProductCreateDTO {
-    @NotBlank
-    private String userId;
+public class ProductCreateQry {
 
-    @NotBlank
+    @NotBlank(message = "title cannot be blank")
     @Size(max = 100)
     private String title;
 
@@ -20,15 +19,15 @@ public class ProductCreateDTO {
 
     private String imagePath;
 
-    @NotNull
+    @NotNull(message = "price cannot be null")
     @DecimalMin(value = "0.0", inclusive = false)
     private BigDecimal price;
 
-    @NotNull
+    @NotNull(message = "quantity cannot be null")
     @Min(1)
     private Integer quantity;
 
-    @NotBlank
+    @NotBlank (message = "city cannot be blank")
     private String city;
 
     private String locationName;
@@ -36,9 +35,10 @@ public class ProductCreateDTO {
     @NotBlank
     private String address;
 
-    @NotNull
+    @NotNull(message = "geoData cannot be null")
+    @Valid
     private GeoData geoData;
 
-    @NotBlank
+    @NotBlank(message = "placeId cannot be blank")
     private String placeId; // Google Maps Place ID
 }
