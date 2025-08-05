@@ -1,10 +1,9 @@
 package com.zwap.product_read_service.vo;
 
-import com.zwap.product_common.product_common.VO.GeoData;
+import com.zwap.product_common.VO.GeoData;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 public class ProductVO {
@@ -20,4 +19,5 @@ public class ProductVO {
     private GeoData geoData;
     private String placeId; // Google Maps Place ID
     private Integer viewCnt;
+    private String userId;
 }
