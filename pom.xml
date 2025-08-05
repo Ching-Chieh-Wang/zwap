@@ -9,11 +9,11 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>api-gateway</module>
+        <module>api-gateway-service</module>
         <module>eureka-service</module>
         <module>product-read-service</module>
         <module>product-write-service</module>
-        <module>config</module>
+        <module>config-service</module>
         <module>product-common</module>
     </modules>
 
