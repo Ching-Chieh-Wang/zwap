@@ -9,6 +9,7 @@ hs_err_pid*
 *.log
 logs/
 *.out
+.env
 
 # IDEs
 .idea/
