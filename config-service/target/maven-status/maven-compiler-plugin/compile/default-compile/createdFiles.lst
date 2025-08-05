@@ -1,0 +1,4 @@
+com/zwap/config/config/NoSessionManager.class
+com/zwap/config/ConfigApplication.class
+com/zwap/config/config/VaultSessionManagerConfig.class
+com/zwap/config/config/VaultSessionManagerConfig$1.class

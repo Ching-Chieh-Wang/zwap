@@ -1,0 +1,33 @@
+server:
+  port: 50013
+spring:
+  config:
+    import: vault://
+  profiles:
+    active: vault, git, default
+  application:
+    name: config-service
+  cloud:
+    vault:
+      host: ${VAULT_SERVICE_HOST}
+      port: ${VAULT_SERVICE_PORT}
+      scheme: http
+      authentication: TOKEN
+      token: ${VAULT_SERVICE_TOKEN}
+      kv:
+        profiles:
+    config:
+      server:
+        vault:
+          host: ${VAULT_SERVICE_HOST}
+          port: ${VAULT_SERVICE_PORT}
+          kvVersion: 2
+          default-key: application
+          order: 1
+          profile-separator: '?profile='
+
+        git:
+          uri: ${GIT_CONFIG_REPO_URI}
+          username: ${GIT_CONFIG_REPO_USERNAME}
+          password: ${GIT_CONFIG_REPO_PASSWORD}
+          order: 2

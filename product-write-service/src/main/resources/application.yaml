@@ -2,7 +2,8 @@ spring:
   application:
     name: product-write-service
   config:
-    import: configserver:${CONFIG_SERVICE_URI}
+    import:
+      configserver:${CONFIG_SERVICE_URI}
   cloud:
     config:
       token: ${VAULT_SERVICE_TOKEN}
