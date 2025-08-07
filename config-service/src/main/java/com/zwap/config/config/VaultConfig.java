@@ -8,14 +8,14 @@ import org.springframework.vault.authentication.SessionManager;
 import org.springframework.vault.config.AbstractVaultConfiguration;
 
 @Configuration
-public class VaultSessionManagerConfig {
+public class VaultConfig {
 
     @Bean
-    public BeanPostProcessor sessionManagerBeanPostProcessor(AbstractVaultConfiguration vaultConfiguration) {
+    public static BeanPostProcessor sessionManagerBeanPostProcessor(AbstractVaultConfiguration vaultConfiguration) {
         return new BeanPostProcessor() {
             @Override
             public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-                if (SessionManager.class.isInstance(bean)) {
+                if (bean instanceof SessionManager) {
                     return new NoSessionManager(vaultConfiguration.clientAuthentication());
                 }
                 return bean;
