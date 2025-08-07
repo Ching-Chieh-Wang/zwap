@@ -1,0 +1,9 @@
+package com.zwap.product_write_service.service;
+import com.zwap.product_write_service.dto.ProductCreateQry;
+import com.zwap.product_write_service.dto.ProductUpdateQry;
+
+
+public interface ProductService {
+    void create(String userId, ProductCreateQry productCreateQry);
+    void update(String userId, String id, ProductUpdateQry productUpdateQry);
+}

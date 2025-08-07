@@ -1,8 +1,8 @@
 server:
   port: 50013
 spring:
-#  config:
-#    import: vault://
+  config:
+    import: vault://
   profiles:
     active: vault,git
   application:
