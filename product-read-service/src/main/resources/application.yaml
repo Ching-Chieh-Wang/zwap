@@ -6,4 +6,4 @@ spring:
       configserver:${CONFIG_SERVICE_URI}
   cloud:
     config:
-      token: ${VAULT_SERVICE_TOKEN}
+      token: ${VAULT_PRODUCT_READ_SERVICE_TOKEN}

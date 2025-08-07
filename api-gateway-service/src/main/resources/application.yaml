@@ -5,4 +5,5 @@ spring:
     import: configserver:${CONFIG_SERVICE_URI}
   cloud:
     config:
-      token: ${VAULT_SERVICE_TOKEN}
+      token: ${VAULT_API_GATEWAY_SERVICE_TOKEN}
+      fail-fast: true
