@@ -1,6 +1,6 @@
 package com.zwap.product_read_service.vo;
 
-import com.zwap.product_common.VO.GeoData;
+import com.zwap.product_common.vo.GeoData;
 import lombok.Data;
 
 import java.math.BigDecimal;
