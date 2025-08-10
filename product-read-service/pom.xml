@@ -5,12 +5,12 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.5.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<version>3.4.4</version>
+		<relativePath/>
 	</parent>
-	<groupId>com.zwap</groupId>
 	<artifactId>product-read-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<groupId>com.zwap</groupId>
 	<name>product-read-service</name>
 	<description>Get product info</description>
 	<url/>
@@ -41,21 +41,14 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis-reactive</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.grpc</groupId>
-			<artifactId>grpc-services</artifactId>
+			<version>3.4.4</version>
 		</dependency>
 		<dependency>
 			<groupId>build.buf</groupId>
 			<artifactId>protovalidate</artifactId>
 			<version>1.0.0-rc.4</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-config</artifactId>
-		</dependency>
-    </dependencies>
+	</dependencies>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -102,6 +95,10 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
 	</build>

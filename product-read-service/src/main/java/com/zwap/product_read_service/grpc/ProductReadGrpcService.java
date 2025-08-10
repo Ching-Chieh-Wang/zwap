@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import build.buf.protovalidate.Validator;
 import build.buf.protovalidate.ValidatorFactory;
 import build.buf.protovalidate.ValidationResult;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 public class ProductReadGrpcService extends ProductReadServiceGrpc.ProductReadServiceImplBase {
 
     private static final Validator validator = ValidatorFactory.newBuilder().build();
@@ -52,9 +54,10 @@ public class ProductReadGrpcService extends ProductReadServiceGrpc.ProductReadSe
                             .asRuntimeException()
             );
         } catch (Exception e) {
+            log.error("Error in isUserProductOwner: {}", e.getMessage(), e);
             responseObserver.onError(
                     io.grpc.Status.INTERNAL
-                            .withDescription("Internal server error")
+                            .withDescription(e.getMessage())
                             .withCause(e)
                             .asRuntimeException()
             );
