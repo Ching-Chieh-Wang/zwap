@@ -8,8 +8,11 @@ import com.zwap.product_read_service.service.IProductService;
 import com.zwap.product_read_service.vo.ProductVO;
 import jakarta.annotation.Resource;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
+@Primary
 @Service
 public class ProductServiceImpl implements IProductService {
 
@@ -17,6 +20,7 @@ public class ProductServiceImpl implements IProductService {
     private ProductMapper productMapper;
 
     @Resource
+    @Lazy
     private IProductService self;
 
     @Override
@@ -35,3 +39,5 @@ public class ProductServiceImpl implements IProductService {
         return userId.equals(product.getUserId());
     }
 }
+
+

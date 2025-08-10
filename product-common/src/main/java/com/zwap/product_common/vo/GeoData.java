@@ -1,4 +1,4 @@
-package com.zwap.product_common.VO;
+package com.zwap.product_common.vo;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

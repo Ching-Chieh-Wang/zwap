@@ -1,6 +1,6 @@
 package com.zwap.product_common.entity;
 
-import com.zwap.product_common.VO.GeoData;
+import com.zwap.product_common.vo.GeoData;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
