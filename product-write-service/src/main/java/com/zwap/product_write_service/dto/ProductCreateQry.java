@@ -2,7 +2,7 @@ package com.zwap.product_write_service.dto;
 
 import java.math.BigDecimal;
 
-import com.zwap.product_common.VO.GeoData;
+import com.zwap.product_common.vo.GeoData;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
