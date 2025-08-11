@@ -11,11 +11,9 @@ pipeline {
 
 
     triggers {
-        GenericTrigger( // <--- Changed to GenericTrigger (capital G)
+        GenericTrigger(
             token: 'xiuxiulovejingjie',
 
-            // This replaces the 'postContent' block.
-            // We define the variables directly in 'genericVariables'.
             genericVariables: [
                 [
                     key: 'changed_files',
@@ -32,8 +30,7 @@ pipeline {
             printContributedVariables: false,
             printPostContent: false
 
-            // Optional: You can also specify a custom cause string if desired.
-            // causeString: 'Generic Webhook Triggered by changes in Kafka Service'
+
         )
     }
 
@@ -123,7 +120,6 @@ pipeline {
                             [envVar: 'PRODUCT_REDIS_SERVICE_URI', vaultKey: 'PRODUCT_REDIS_SERVICE_URI']
                         ]],
                         [path: 'secret/product/product-read-service', secretValues: [
-                            [envVar: 'PRODUCT_ELASTICSEARCH_SERVICE_USERNAME', vaultKey: 'PRODUCT_ELASTICSEARCH_SERVICE_USERNAME'],
                             [envVar: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD', vaultKey: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD']
                         ]]
                     ]
