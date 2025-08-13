@@ -1,9 +1,9 @@
 package com.zwap.product_write_service.dto;
 
+import com.zwap.product_common.vo.GeoData;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
 public class ProductUpdateQry {
@@ -13,5 +13,9 @@ public class ProductUpdateQry {
     private BigDecimal price;
     private Integer quantity;
     private String status;
-    private LocalDateTime expiredAt;
+    private String city;
+    private String locationName;
+    private String address;
+    private GeoData geoData;
+    private String placeId;
 }

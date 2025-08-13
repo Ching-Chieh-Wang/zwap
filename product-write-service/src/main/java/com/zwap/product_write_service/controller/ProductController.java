@@ -14,7 +14,7 @@ public class ProductController {
     @Resource
     ProductService productService;
 
-    @PostMapping("/")
+    @PostMapping
     public void create(@RequestHeader("user_id") String userId, @RequestBody @Valid ProductCreateQry productDTO) {
         productService.create(userId, productDTO);
     }

@@ -1,20 +1,22 @@
 package com.zwap.product_read_service.controller;
 
-import com.zwap.product_read_service.dto.ProductSearchDTO;
-import com.zwap.product_read_service.vo.ProductVO;
+import com.zwap.product_read_service.service.IProductService;
+import com.zwap.product_common.vo.ProductVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.annotation.Resource;
 
 @RestController
 @RequestMapping("/product")
 @Slf4j
 public class ProductController {
 
-    @GetMapping("/")
-    public ProductVO getById(@RequestParam("id") String id) {
-        return new ProductVO();
+    @Resource
+    IProductService productService;
+
+    @GetMapping("/{id}")
+    public ProductVO getById(@PathVariable String id) {
+        return productService.getVOById(id);
     }
 }
