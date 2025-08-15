@@ -52,4 +52,14 @@ public class ProductServiceImpl implements ProductService {
             );
         }
     }
+
+    @Override
+    public void delete(String userId, String id) {
+        boolean isProductOwner = productReadGrpcClient.isProductOwner(id,userId);
+        if (!isProductOwner) throw new ProductOwnershipException("You do not own this product");
+        mongoTemplate.remove(
+            Query.query(Criteria.where("_id").is(id)),
+            Product.class
+        );
+    }
 }
