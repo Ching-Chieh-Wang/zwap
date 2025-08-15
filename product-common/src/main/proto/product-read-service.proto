@@ -7,64 +7,17 @@ option java_multiple_files = true;
 option java_outer_classname = "ProductReadServiceProto";
 
 import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
 
-// Request message for fetching a product by ID
-message ProductIdMessage {
+message IsProductOwnerGrpcRequest {
   string id = 1 [(buf.validate.field).string.min_len = 1];
+  string userId = 2 [(buf.validate.field).string.min_len = 1];
 }
 
-// Response message with product fields (flattened)
-message ProductMessage {
-  // Required identifiers
-  string id = 1 [(buf.validate.field).string.min_len = 1];
-  string user_id = 2 [(buf.validate.field).string.min_len = 1];
-
-  // Basic product info
-  string title = 3 [
-    (buf.validate.field).string.min_len = 1,
-    (buf.validate.field).string.max_len = 200
-  ];
-  string description = 4 [
-    (buf.validate.field).string.max_len = 2000
-  ];
-  string image_path = 5 [
-    (buf.validate.field).string.max_len = 512
-  ];
-
-  // Price as string: up to 9 digits and optional 2‑decimals
-  string price = 6 [
-    (buf.validate.field).string.pattern = "^\\d{1,9}(\\.\\d{1,2})?$"
-  ];
-
-  // Status non‑empty (string enum can be tightened later)
-  string status = 9 [(buf.validate.field).string.min_len = 1];
-
-  // Timestamps (RFC3339/ISO‑8601 basic check)
-  google.protobuf.Timestamp expired_at = 10 [
-    (buf.validate.field).string.pattern = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*$"
-  ];
-  google.protobuf.Timestamp created_at = 11 [
-    (buf.validate.field).string.pattern = "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*$"
-  ];
-
-  // Location (optional, length‑bounded)
-  string city = 13 [(buf.validate.field).string.max_len = 255];
-  string location_name = 14 [(buf.validate.field).string.max_len = 255];
-  string address = 15 [(buf.validate.field).string.max_len = 255];
-  string place_id = 16 [(buf.validate.field).string.max_len = 255];
-
-  // Non‑negative view count
-  int32 view_cnt = 17 [(buf.validate.field).int32.gte = 0];
-
-  message GeoData {
-    double latitude = 1;
-    double longitude = 2;
-  }
-  GeoData geo_data = 18;
+message IsProductOwnerGrpcResponse {
+  bool isProductOwner = 1;
 }
 
 // The service definition
 service ProductReadService {
-  rpc GetProductById(ProductIdMessage) returns (ProductMessage);
+  rpc IsProductOwner(IsProductOwnerGrpcRequest) returns (IsProductOwnerGrpcResponse);
 }
