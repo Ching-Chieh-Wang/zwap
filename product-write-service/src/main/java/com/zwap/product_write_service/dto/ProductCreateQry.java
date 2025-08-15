@@ -6,6 +6,8 @@ import com.zwap.product_common.vo.GeoData;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 @Data
 public class ProductCreateQry {

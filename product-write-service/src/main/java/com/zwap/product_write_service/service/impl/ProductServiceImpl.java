@@ -1,22 +1,23 @@
 package com.zwap.product_write_service.service.impl;
 
 import com.zwap.product_common.entity.Product;
+import com.zwap.product_common.exception.ProductOwnershipException;
 import com.zwap.product_write_service.client.ProductReadGrpcClient;
 import com.zwap.product_write_service.converter.ProductConverter;
 import com.zwap.product_write_service.dto.ProductCreateQry;
 import com.zwap.product_write_service.dto.ProductUpdateQry;
 import com.zwap.product_write_service.service.ProductService;
 import com.zwap.product_common.mapper.ProductMapper;
-import com.zwap.product_write_service.utils.BeanCopyUtils;
+import com.zwap.product_write_service.utils.UpdateBuilderUtils;
 import jakarta.annotation.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 
 @Service
 public class ProductServiceImpl implements ProductService {
-
-
 
     @Resource
     private ProductMapper productMapper;
@@ -24,6 +25,11 @@ public class ProductServiceImpl implements ProductService {
     @Resource
     private ProductReadGrpcClient productReadGrpcClient;
 
+    @Resource
+    private MongoTemplate mongoTemplate;
+
+    @Resource
+    private UpdateBuilderUtils updateBuilderUtils;
 
 
     @Override
@@ -34,14 +40,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void update(String userId, String id, ProductUpdateQry productUpdateQry) {
-        Product product = productReadGrpcClient.getProductById(id);
-        if (!product.getUserId().equals(userId)) {
-            throw new ResponseStatusException(
-                HttpStatus.FORBIDDEN, "You do not own this product"
+        boolean isProductOwner = productReadGrpcClient.isProductOwner(id,userId);
+        if (!isProductOwner) throw new ProductOwnershipException("You do not own this product");
+        Update u = updateBuilderUtils.buildUpdateFrom(productUpdateQry);
+
+        if (!u.getUpdateObject().isEmpty()) {
+            mongoTemplate.updateFirst(
+                Query.query(Criteria.where("_id").is(id)),
+                u,
+                Product.class
             );
         }
-        BeanCopyUtils.copyNonNullProperties(productUpdateQry, product);
-        productMapper.save(product);
     }
 }
-
