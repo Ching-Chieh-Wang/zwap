@@ -6,6 +6,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,6 +24,7 @@ public class Product {
     private String title;
     private String description;
     private String imagePath;
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal price;
     private String status= "ACTIVE";
 
