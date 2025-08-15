@@ -1,8 +1,6 @@
-package com.zwap.product_read_service.vo;
+package com.zwap.product_common.vo;
 
-import com.zwap.product_common.vo.GeoData;
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Data
@@ -20,4 +18,5 @@ public class ProductVO {
     private String placeId; // Google Maps Place ID
     private Integer viewCnt;
     private String userId;
+    private String status;
 }

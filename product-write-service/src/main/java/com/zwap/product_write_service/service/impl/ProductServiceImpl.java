@@ -7,8 +7,11 @@ import com.zwap.product_write_service.dto.ProductCreateQry;
 import com.zwap.product_write_service.dto.ProductUpdateQry;
 import com.zwap.product_write_service.service.ProductService;
 import com.zwap.product_common.mapper.ProductMapper;
+import com.zwap.product_write_service.utils.BeanCopyUtils;
 import jakarta.annotation.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -31,13 +34,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void update(String userId, String id, ProductUpdateQry productUpdateQry) {
-        boolean isOwner = productReadGrpcClient.isUserProductOwner(userId, id);
-        if (!isOwner) {
-            throw new org.springframework.web.server.ResponseStatusException(
-                org.springframework.http.HttpStatus.FORBIDDEN, "You do not own this product"
+        Product product = productReadGrpcClient.getProductById(id);
+        if (!product.getUserId().equals(userId)) {
+            throw new ResponseStatusException(
+                HttpStatus.FORBIDDEN, "You do not own this product"
             );
         }
-        Product product = ProductConverter.toEntity(productUpdateQry);
+        BeanCopyUtils.copyNonNullProperties(productUpdateQry, product);
         productMapper.save(product);
     }
 }
