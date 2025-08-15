@@ -1,8 +1,8 @@
 package com.zwap.product_write_service.client;
 
 
-import com.zwap.product_common.entity.Product;
-import com.zwap.product_read_service.grpc.ProductId;
+import com.zwap.product_read_service.grpc.IsProductOwnerGrpcRequest;
+import com.zwap.product_read_service.grpc.IsProductOwnerGrpcResponse;
 import com.zwap.product_read_service.grpc.ProductReadServiceGrpc.ProductReadServiceBlockingStub;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.Resource;
@@ -15,13 +15,15 @@ public class ProductReadGrpcClient {
     private ProductReadServiceBlockingStub productReadStub;
 
 
-    public Product getProductById(String id) {
+    public boolean isProductOwner(String id, String userId) {
         try {
-            ProductId request = ProductId.newBuilder()
+            IsProductOwnerGrpcRequest request = IsProductOwnerGrpcRequest.newBuilder()
                     .setId(id)
+                    .setUserId(userId)
                     .build();
 
-            return new Product(productReadStub.getProductById(request));
+            IsProductOwnerGrpcResponse response = productReadStub.isProductOwner(request);
+            return response.getIsProductOwner();
         } catch (StatusRuntimeException e) {
             throw new RuntimeException("Failed to get product by ID: " + id, e);
         }

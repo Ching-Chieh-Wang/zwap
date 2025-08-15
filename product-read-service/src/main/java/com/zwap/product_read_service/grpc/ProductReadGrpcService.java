@@ -22,8 +22,8 @@ public class ProductReadGrpcService extends ProductReadServiceGrpc.ProductReadSe
     IProductService productService;
 
     @Override
-    public void getProductById(ProductIdMessage request,
-                               StreamObserver<ProductMessage> responseObserver){
+    public void isProductOwner(IsProductOwnerGrpcRequest request,
+                               StreamObserver<IsProductOwnerGrpcResponse> responseObserver){
         try {
             // ✅ Validate the request
             ValidationResult result = validator.validate(request);
@@ -37,8 +37,13 @@ public class ProductReadGrpcService extends ProductReadServiceGrpc.ProductReadSe
             }
 
             String id = request.getId();
+            String userId = request.getUserId();
 
-            ProductMessage response = productService.getById(id).toGrpcMessage();
+
+            boolean isOwner = productService.checkOwnership(id, userId);
+            IsProductOwnerGrpcResponse response = IsProductOwnerGrpcResponse.newBuilder()
+                    .setIsProductOwner(isOwner)
+                    .build();
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();

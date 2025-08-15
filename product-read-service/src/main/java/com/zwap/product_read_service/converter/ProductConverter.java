@@ -5,7 +5,7 @@ import com.zwap.product_common.vo.ProductVO;
 import org.springframework.beans.BeanUtils;
 
 public class ProductConverter {
-    public static ProductVO toProductVO(Product product) {
+    public static ProductVO toVO(Product product) {
         if (product==null) return ProductVO.NOT_FOUND;
         ProductVO productVO = new ProductVO();
         BeanUtils.copyProperties(product, productVO);
