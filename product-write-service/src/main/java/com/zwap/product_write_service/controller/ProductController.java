@@ -23,4 +23,9 @@ public class ProductController {
     public void update(@RequestHeader("user_id") String userId, @PathVariable("id") String id, @RequestBody @Valid ProductUpdateQry productUpdateQry) {
         productService.update(userId, id, productUpdateQry);
     }
+
+    @DeleteMapping("/{id}")
+    public void delete(@RequestHeader("user_id") String userId, @PathVariable("id") String id) {
+        productService.delete(userId, id);
+    }
 }
