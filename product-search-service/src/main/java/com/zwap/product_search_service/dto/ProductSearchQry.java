@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 
 @Data
 public class ProductSearchQry {
-    @NotBlank(message = "searchParam cannot be blank")
     private String searchParam;
     @Min(value = 0, message = "min price must be at least 0")
     @Max(value = 1000000, message = "min price must not exceed 1,000,000")
