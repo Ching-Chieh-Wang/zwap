@@ -34,10 +34,7 @@ pipeline {
         )
     }
 
-
-
-
-
+    stages {
         stage('Sparse Clone Kafka Folder (085)') {
             steps {
                 sshagent([env.SSH_KEY]) {
@@ -132,9 +129,6 @@ pipeline {
                 """
             }
         }
-
-
-
     }
     post {
         always {
