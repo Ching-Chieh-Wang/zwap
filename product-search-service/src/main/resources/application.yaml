@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: product-search-service
+  config:
+    import:
+      configserver:${CONFIG_SERVICE_URI}
+  cloud:
+    config:
+      token: ${VAULT_PRODUCT_SEARCH_SERVICE_TOKEN}
+

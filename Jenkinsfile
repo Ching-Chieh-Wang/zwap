@@ -119,7 +119,7 @@ pipeline {
                         [path: 'secret/product/product-read-service', secretValues: [
                             [envVar: 'PRODUCT_REDIS_SERVICE_URI', vaultKey: 'PRODUCT_REDIS_SERVICE_URI']
                         ]],
-                        [path: 'secret/product/product-read-service', secretValues: [
+                        [path: 'secret/product/product-search-service', secretValues: [
                             [envVar: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD', vaultKey: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD']
                         ]]
                     ]
