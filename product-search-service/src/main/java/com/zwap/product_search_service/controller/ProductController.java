@@ -15,7 +15,7 @@ public class ProductController {
     @Resource
     IProductService productService;
 
-    @PostMapping()
+    @PostMapping
     public ProductSearchVOs search(@RequestHeader("user_id") String userId, @RequestBody @Valid ProductSearchQry query) {
         return productService.search(query);
     }
