@@ -34,51 +34,8 @@ pipeline {
         )
     }
 
-    stages {
-        stage('Stop Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
-                            set -e
-                            PID=\$(lsof -ti :50001 || true)
-                            if [ -n "\$PID" ]; then
-                                echo "[Connector Stop] Killing PID \$PID on port 50001"
-                                kill -9 \$PID
-                            else
-                                echo "[Connector Stop] No process on port 50001"
-                            fi
-                        '
-                    """
-                }
-            }
-        }
 
-        stage('Stop Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                            set -e
-                            PID=\$(lsof -ti :50003 || true)
-                            if [ -n "\$PID" ]; then
-                                echo "[Kafka Stop] Killing PID \$PID on port 50003"
-                                kill -9 \$PID
-                            else
-                                echo "[Kafka Stop] No process on port 50003"
-                            fi
-                        '
-                    """
-                }
-            }
-        }
 
-        stage('Wait for Kafka, connector stop') {
-            steps {
-                echo 'Sleeping 10 seconds to let Kafka and connector start...'
-                sh 'sleep 10'
-            }
-        }
 
 
         stage('Sparse Clone Kafka Folder (085)') {
@@ -131,125 +88,52 @@ pipeline {
             }
         }
 
-        stage('Setup Kafka (085)') {
+        stage('Setup Config') {
             steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                            set -e
-                            cd zwap/services/kafka
-                            ./setup.sh
-                        '
-                    """
-                }
+                sh """
+                    set -e
+                    cd "$HOME/zwap/services/kafka"
+
+                    # Load .env so envsubst can see vars
+                    if [ -f .env ]; then
+                      set -a; . ./.env; set +a
+                    fi
+
+                    SUBST_VARS="$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT $KAFKA_CONNECTOR_PORT"
+
+                    mkdir -p config
+
+                    # Render connector templates (render only if template exists)
+                    [ -f config/product-mongodb-source-connector-template.properties ] && \
+                      envsubst "$SUBST_VARS" < config/product-mongodb-source-connector-template.properties \
+                      > config/product-mongodb-source-connector.properties || true
+
+                    [ -f config/product-redis-sink-connector-template.properties ] && \
+                      envsubst < config/product-redis-sink-connector-template.properties \
+                      > config/product-redis-sink-connector.properties || true
+
+                    [ -f config/product-elasticsearch-sink-connector-template.properties ] && \
+                      envsubst < config/product-elasticsearch-sink-connector-template.properties \
+                      > config/product-elasticsearch-sink-connector.properties || true
+
+                    # Standalone & Broker
+                    [ -f config/connect-standalone-template.properties ] && \
+                      envsubst < config/connect-standalone-template.properties \
+                      > config/connect-standalone.properties || true
+
+                    [ -f config/kraft-broker-template.properties ] && \
+                      envsubst < config/kraft-broker-template.properties \
+                      > config/kraft-broker.properties || true
+
+                    # Distributed worker config
+                    [ -f config/connect-distributed-template.properties ] && \
+                      envsubst "$SUBST_VARS" < config/connect-distributed-template.properties \
+                      > config/connect-distributed.properties || true
+                """
             }
         }
 
-        stage('Bootstrap Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                            set -e
-                            cd zwap/services/kafka
-                            ./bootstrap.sh
-                        '
-                    """
-                }
-            }
-        }
 
-        stage('Run Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                            set -e
-                            cd zwap/services/kafka
-                            nohup ./run_kafka.sh > kafka.log 2>&1 &
-                            echo \$! > kafka.pid
-                            echo "[Kafka Start] Kafka started with PID \$(cat kafka.pid)"
-                        '
-                    """
-                }
-            }
-        }
-
-        stage('Run Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
-                            set -e
-                            cd zwap/services/kafka
-                            export LOG4J_CONFIGURATION_FILE=/opt/bitnami/kafka/config/log4j2.yaml
-                            nohup ./run_connector.sh > connector.log 2>&1 &
-                            echo \$! > connector.pid
-                            echo "[Connector Start] Connector started with PID \$(cat connector.pid)"
-                        '
-                    """
-                }
-            }
-        }
-
-        stage('Wait for Kafka, connector Startup') {
-            steps {
-                echo 'Sleeping 30 seconds to let Kafka and connector start...'
-                sh 'sleep 30'
-            }
-        }
-
-        stage('Verify Kafka (085)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_KAFKA} '
-                            set -e
-                            cd zwap/services/kafka
-                            if [ -f kafka.pid ]; then
-                                PID=\$(cat kafka.pid)
-                                if ps -p \$PID > /dev/null; then
-                                    echo "[Kafka Health] Kafka is running with PID \$PID"
-                                else
-                                    echo "[Kafka Health] PID \$PID not running"
-                                    cat kafka.log || true
-                                    exit 1
-                                fi
-                            else
-                                echo "[Kafka Health] kafka.pid file not found"
-                                exit 1
-                            fi
-                        '
-                    """
-                }
-            }
-        }
-
-        stage('Verify Connector (084)') {
-            steps {
-                sshagent([env.SSH_KEY]) {
-                    sh """
-                        ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
-                            set -e
-                            cd zwap/services/kafka
-                            if [ -f connector.pid ]; then
-                                PID=\$(cat connector.pid)
-                                if ps -p \$PID > /dev/null; then
-                                    echo "[Connector Health] Connector is running with PID \$PID"
-                                else
-                                    echo "[Connector Health] PID \$PID not running"
-                                    cat connector.log || true
-                                    exit 1
-                                fi
-                            else
-                                echo "[Connector Health] connector.pid file not found"
-                                exit 1
-                            fi
-                        '
-                    """
-                }
-            }
-        }
 
     }
     post {
