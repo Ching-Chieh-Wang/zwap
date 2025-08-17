@@ -87,7 +87,7 @@ pipeline {
 
         stage('Setup Config') {
             steps {
-                sh """
+                sh '''
                     set -e
                     cd "$HOME/zwap/services/kafka"
 
@@ -126,7 +126,7 @@ pipeline {
                     [ -f config/connect-distributed-template.properties ] && \
                       envsubst "$SUBST_VARS" < config/connect-distributed-template.properties \
                       > config/connect-distributed.properties || true
-                """
+                '''
             }
         }
     }
