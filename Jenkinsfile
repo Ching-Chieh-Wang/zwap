@@ -91,7 +91,7 @@ pipeline {
                     if [ -f config/product-mongodb-source-connector.json ]; then
                       curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-mongodb-source-connector/config" \
                         -H 'Content-Type: application/json' \
-                        --data-binary @config/product-mongodb-source-connector.json || exit 1
+                        --data-binary @config/product-mongodb-source-connector.json || { echo "[Error] Failed to apply product-mongodb-source-connector"; exit 1; }
                       echo "[Apply] product-mongodb-source-connector applied"
                     else
                       echo "[Skip] config/product-mongodb-source-connector.json not found"
@@ -100,7 +100,7 @@ pipeline {
                     if [ -f config/product-redis-sink-connector.json ]; then
                       curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-redis-sink-connector/config" \
                         -H 'Content-Type: application/json' \
-                        --data-binary @config/product-redis-sink-connector.json || exit 1
+                        --data-binary @config/product-redis-sink-connector.json || { echo "[Error] Failed to apply product-redis-sink-connector"; exit 1; }
                       echo "[Apply] product-redis-sink-connector applied"
                     else
                       echo "[Skip] config/product-redis-sink-connector.json not found"
@@ -109,7 +109,7 @@ pipeline {
                     if [ -f config/product-elasticsearch-sink-connector.json ]; then
                       curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-elasticsearch-sink-connector/config" \
                         -H 'Content-Type: application/json' \
-                        --data-binary @config/product-elasticsearch-sink-connector.json || exit 1
+                        --data-binary @config/product-elasticsearch-sink-connector.json || { echo "[Error] Failed to apply product-elasticsearch-sink-connector"; exit 1; }
                       echo "[Apply] product-elasticsearch-sink-connector applied"
                     else
                       echo "[Skip] config/product-elasticsearch-sink-connector.json not found"
