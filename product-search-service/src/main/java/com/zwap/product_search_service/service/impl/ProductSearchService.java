@@ -1,5 +1,6 @@
 package com.zwap.product_search_service.service.impl;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.NumberRangeQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch._types.query_dsl.RangeQuery;
@@ -35,7 +36,7 @@ public class ProductSearchService implements IProductService {
 
         if (q.getMinPrice() != null || q.getMaxPrice() != null) {
             // price range (numeric): use NumberRangeQuery -> RangeQuery
-            var numRange = new co.elastic.clients.elasticsearch._types.query_dsl.NumberRangeQuery.Builder()
+            var numRange = new NumberRangeQuery.Builder()
                     .field("price");
             if (q.getMinPrice() != null) {
                 numRange.gte(q.getMinPrice().doubleValue());
