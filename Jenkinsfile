@@ -79,17 +79,17 @@ pipeline {
 
         stage('Apply Connectors via REST') {
             steps {
-                sh """
+                sh '''
                     set -e
                     cd ~/zwap/services/kafka
 
                     if [ -f .env ]; then set -a; . ./.env; set +a; fi
 
-                    echo "[Apply] Using Connect REST on localhost:${KAFKA_CONNECTOR_PORT}"
+                    echo "[Apply] Using Connect REST on localhost:$KAFKA_CONNECTOR_PORT"
 
                     # PUT = create or update (idempotent)
                     if [ -f config/product-mongodb-source-connector.json ]; then
-                      curl -s -X PUT "http://localhost:${KAFKA_CONNECTOR_PORT}/connectors/product-mongodb-source-connector/config" \
+                      curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-mongodb-source-connector/config" \
                         -H 'Content-Type: application/json' \
                         --data-binary @config/product-mongodb-source-connector.json || exit 1
                       echo "[Apply] product-mongodb-source-connector applied"
@@ -98,7 +98,7 @@ pipeline {
                     fi
 
                     if [ -f config/product-redis-sink-connector.json ]; then
-                      curl -s -X PUT "http://localhost:${KAFKA_CONNECTOR_PORT}/connectors/product-redis-sink-connector/config" \
+                      curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-redis-sink-connector/config" \
                         -H 'Content-Type: application/json' \
                         --data-binary @config/product-redis-sink-connector.json || exit 1
                       echo "[Apply] product-redis-sink-connector applied"
@@ -107,14 +107,14 @@ pipeline {
                     fi
 
                     if [ -f config/product-elasticsearch-sink-connector.json ]; then
-                      curl -s -X PUT "http://localhost:${KAFKA_CONNECTOR_PORT}/connectors/product-elasticsearch-sink-connector/config" \
+                      curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-elasticsearch-sink-connector/config" \
                         -H 'Content-Type: application/json' \
                         --data-binary @config/product-elasticsearch-sink-connector.json || exit 1
                       echo "[Apply] product-elasticsearch-sink-connector applied"
                     else
                       echo "[Skip] config/product-elasticsearch-sink-connector.json not found"
                     fi
-                """
+                '''
             }
         }
     }
