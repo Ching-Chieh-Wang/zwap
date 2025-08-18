@@ -60,7 +60,7 @@ pipeline {
                 withVault([
                     vaultSecrets: [
                         [path: 'secret/product/common', secretValues: [
-                            [envVar: 'PRODUCT_MONGODB_SERVICE_PASSWORD', vaultKey: 'PRODUCT_MONGODB_SERVICE_PASSWORD']
+                            [envVar: 'PRODUCT_MONGODB_SERVICE_URI', vaultKey: 'PRODUCT_MONGODB_SERVICE_URI']
                         ]],
                         [path: 'secret/product/product-read-service', secretValues: [
                             [envVar: 'PRODUCT_REDIS_SERVICE_URI', vaultKey: 'PRODUCT_REDIS_SERVICE_URI']
