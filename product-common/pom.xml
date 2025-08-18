@@ -32,7 +32,6 @@
 		<grpc.version>1.72.0</grpc.version>
 		<spring-cloud.version>2024.0.1</spring-cloud.version>
 		<spring-grpc.version>0.9.0</spring-grpc.version>
-		<spring-cloud.version>2024.0.1</spring-cloud.version>
 	</properties>
 	<dependencies>
 		<dependency>
