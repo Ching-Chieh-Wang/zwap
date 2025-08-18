@@ -4,6 +4,7 @@ pipeline {
     environment {
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
         VAULT_SERVICE_URI = 'http://linux-076:50006'
+        KAFKA_CONNECTOR_URI = 'http://linux-084:50001'
     }
 
 
@@ -85,9 +86,9 @@ pipeline {
 
                     if [ -f .env ]; then set -a; . ./.env; set +a; fi
 
-                    echo "[Apply] Using Connect REST on localhost:$KAFKA_CONNECTOR_PORT"
+                    echo "[Apply] Using Connect REST on $KAFKA_CONNECTOR_URI"
 
-                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-mongodb-source-connector/config" \
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-mongodb-source-connector/config" \
                       -H 'Content-Type: application/json' \
                       --data-binary @config/product-mongodb-source-connector.json)
                     if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
@@ -98,7 +99,7 @@ pipeline {
                       exit 1
                     fi
 
-                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-redis-sink-connector/config" \
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-redis-sink-connector/config" \
                       -H 'Content-Type: application/json' \
                       --data-binary @config/product-redis-sink-connector.json)
                     if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
@@ -109,7 +110,7 @@ pipeline {
                       exit 1
                     fi
 
-                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-elasticsearch-sink-connector/config" \
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-elasticsearch-sink-connector/config" \
                       -H 'Content-Type: application/json' \
                       --data-binary @config/product-elasticsearch-sink-connector.json)
                     if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
