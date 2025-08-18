@@ -4,7 +4,7 @@
   "topics.regex": "mongo\\..*",
   "key.converter": "org.apache.kafka.connect.storage.StringConverter",
   "value.converter": "org.apache.kafka.connect.storage.StringConverter",
-  "redis.uri": "${env:PRODUCT_REDIS_SERVICE_URI}",
+  "redis.uri": "${PRODUCT_REDIS_SERVICE_URI}",
   "redis.type": "STRING",
   "redis.key": "product",
   "consumer.max.poll.records": "1000"
