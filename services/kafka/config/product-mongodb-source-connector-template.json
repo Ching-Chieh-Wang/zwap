@@ -1,0 +1,51 @@
+{
+  "name": "product-mongodb-source-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.mongodb.MongoDbConnector",
+    "tasks.max": "1",
+
+    "mongodb.connection.string": "${env:PRODUCT_MONGODB_SERVICE_URI}",
+    "topic.prefix": "mongo",
+    "database.include.list": "product",
+    "snapshot.mode": "initial",
+
+    "database.history.kafka.bootstrap.servers": "${env:KAFKA_HOST}:${env:KAFKA_BROKER_PORT}",
+    "database.history.kafka.topic": "dbhistory.mongodb",
+
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+
+    "predicates": "IsTombstone",
+    "predicates.IsTombstone.type": "org.apache.kafka.connect.transforms.predicates.RecordIsTombstone",
+
+    "transforms": "unwrap,ValueToKey,ExtractKey1,ExtractKey2,DropId,DropClass",
+
+    "transforms.unwrap.type": "io.debezium.connector.mongodb.transforms.ExtractNewDocumentState",
+    "transforms.unwrap.delete.tombstone.handling.mode": "tombstone",
+
+    "transforms.ValueToKey.type": "org.apache.kafka.connect.transforms.ValueToKey",
+    "transforms.ValueToKey.fields": "_id",
+    "transforms.ValueToKey.predicate": "IsTombstone",
+    "transforms.ValueToKey.negate": "true",
+
+    "transforms.ExtractKey1.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.ExtractKey1.field": "_id",
+    "transforms.ExtractKey1.predicate": "IsTombstone",
+    "transforms.ExtractKey1.negate": "true",
+
+    "transforms.ExtractKey2.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.ExtractKey2.field": "id",
+    "transforms.ExtractKey2.predicate": "IsTombstone",
+
+    "transforms.DropId.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.DropId.exclude": "_id",
+    "transforms.DropId.predicate": "IsTombstone",
+    "transforms.DropId.negate": "true",
+
+    "transforms.DropClass.type": "org.apache.kafka.connect.transforms.ReplaceField$Value",
+    "transforms.DropClass.exclude": "_class",
+    "transforms.DropClass.predicate": "IsTombstone",
+    "transforms.DropClass.negate": "true"
+  }
+}

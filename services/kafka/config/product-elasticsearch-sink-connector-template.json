@@ -1,0 +1,17 @@
+{
+  "name": "product-elasticsearch-sink-connector",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics.regex": "mongo\\..*",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "connection.url": "${env:PRODUCT_ELASTICSEARCH_SERVICE_URI}",
+    "connection.username": "${env:PRODUCT_ELASTICSEARCH_SERVICE_USERNAME}",
+    "connection.password": "${env:PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD}",
+    "key.ignore": "false",
+    "schema.ignore": "true",
+    "behavior.on.null.values": "delete"
+  }
+}

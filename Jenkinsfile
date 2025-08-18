@@ -85,7 +85,7 @@ pipeline {
             }
         }
 
-        stage('Setup Config') {
+        stage('Setup env') {
             steps {
                 sh '''
                     set -e
@@ -95,38 +95,54 @@ pipeline {
                     if [ -f .env ]; then
                       set -a; . ./.env; set +a
                     fi
-
-                    SUBST_VARS="$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT $KAFKA_CONNECTOR_PORT"
-
-                    mkdir -p config
-
-                    # Render connector templates (render only if template exists)
-                    [ -f config/product-mongodb-source-connector-template.properties ] && \
-                      envsubst "$SUBST_VARS" < config/product-mongodb-source-connector-template.properties \
-                      > config/product-mongodb-source-connector.properties || true
-
-                    [ -f config/product-redis-sink-connector-template.properties ] && \
-                      envsubst < config/product-redis-sink-connector-template.properties \
-                      > config/product-redis-sink-connector.properties || true
-
-                    [ -f config/product-elasticsearch-sink-connector-template.properties ] && \
-                      envsubst < config/product-elasticsearch-sink-connector-template.properties \
-                      > config/product-elasticsearch-sink-connector.properties || true
-
-                    # Standalone & Broker
-                    [ -f config/connect-standalone-template.properties ] && \
-                      envsubst < config/connect-standalone-template.properties \
-                      > config/connect-standalone.properties || true
-
-                    [ -f config/kraft-broker-template.properties ] && \
-                      envsubst < config/kraft-broker-template.properties \
-                      > config/kraft-broker.properties || true
-
-                    # Distributed worker config
-                    [ -f config/connect-distributed-template.properties ] && \
-                      envsubst "$SUBST_VARS" < config/connect-distributed-template.properties \
-                      > config/connect-distributed.properties || true
                 '''
+            }
+        }
+
+        stage('Apply Connectors via REST (084)') {
+            steps {
+                sshagent([env.SSH_KEY]) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${HOST_CONNECTOR} '
+                            set -e
+                            cd ~/zwap/services/kafka
+
+                            # Load .env so the worker sees env vars used by ${env:...}
+                            if [ -f .env ]; then set -a; . ./.env; set +a; fi
+                            PORT=${KAFKA_CONNECTOR_PORT}
+
+                            echo "[Apply] Using Connect REST on localhost:${KAFKA_CONNECTOR_PORT}"
+
+                            # PUT = create or update (idempotent)
+                            if [ -f config/product-mongodb-source-connector.json ]; then
+                              curl -s -X PUT "http://localhost:${KAFKA_CONNECTOR_PORT}/connectors/product-mongodb-source-connector/config" \
+                                -H 'Content-Type: application/json' \
+                                --data-binary @config/product-mongodb-source-connector.json || exit 1
+                              echo "[Apply] product-mongodb-source-connector applied"
+                            else
+                              echo "[Skip] config/product-mongodb-source-connector.json not found"
+                            fi
+
+                            if [ -f config/product-redis-sink-connector.json ]; then
+                              curl -s -X PUT "http://localhost:${KAFKA_CONNECTOR_PORT}/connectors/product-redis-sink-connector/config" \
+                                -H 'Content-Type: application/json' \
+                                --data-binary @config/product-redis-sink-connector.json || exit 1
+                              echo "[Apply] product-redis-sink-connector applied"
+                            else
+                              echo "[Skip] config/product-redis-sink-connector.json not found"
+                            fi
+
+                            if [ -f config/product-elasticsearch-sink-connector.json ]; then
+                              curl -s -X PUT "http://localhost:${KAFKA_CONNECTOR_PORT}/connectors/product-elasticsearch-sink-connector/config" \
+                                -H 'Content-Type: application/json' \
+                                --data-binary @config/product-elasticsearch-sink-connector.json || exit 1
+                              echo "[Apply] product-elasticsearch-sink-connector applied"
+                            else
+                              echo "[Skip] config/product-elasticsearch-sink-connector.json not found"
+                            fi
+                        '
+                    """
+                }
             }
         }
     }
@@ -137,8 +153,8 @@ pipeline {
                 sh """
                     ssh -o StrictHostKeyChecking=no \${HOST_CONNECTOR} '
                         set -e
-                        rm -rf ~/zwap/services/kafka/plugins
-                        echo "[Post Cleanup] Removed plugins folder from linux-084"
+                        rm -rf ~/zwap/services/kafka
+                        echo "[Post Cleanup] Removed kafka folder from linux-084"
                     '
                 """
             }
