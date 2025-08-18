@@ -94,7 +94,8 @@ pipeline {
                         --data-binary @config/product-mongodb-source-connector.json || { echo "[Error] Failed to apply product-mongodb-source-connector"; exit 1; }
                       echo "[Apply] product-mongodb-source-connector applied"
                     else
-                      echo "[Skip] config/product-mongodb-source-connector.json not found"
+                      echo "[Error] config/product-mongodb-source-connector.json not found"
+                      exit 1
                     fi
 
                     if [ -f config/product-redis-sink-connector.json ]; then
@@ -103,7 +104,8 @@ pipeline {
                         --data-binary @config/product-redis-sink-connector.json || { echo "[Error] Failed to apply product-redis-sink-connector"; exit 1; }
                       echo "[Apply] product-redis-sink-connector applied"
                     else
-                      echo "[Skip] config/product-redis-sink-connector.json not found"
+                      echo "[Error] config/product-redis-sink-connector.json not found"
+                      exit 1
                     fi
 
                     if [ -f config/product-elasticsearch-sink-connector.json ]; then
@@ -112,7 +114,8 @@ pipeline {
                         --data-binary @config/product-elasticsearch-sink-connector.json || { echo "[Error] Failed to apply product-elasticsearch-sink-connector"; exit 1; }
                       echo "[Apply] product-elasticsearch-sink-connector applied"
                     else
-                      echo "[Skip] config/product-elasticsearch-sink-connector.json not found"
+                      echo "[Error] config/product-elasticsearch-sink-connector.json not found"
+                      exit 1
                     fi
                 '''
             }
