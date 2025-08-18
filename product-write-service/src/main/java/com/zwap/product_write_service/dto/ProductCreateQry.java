@@ -1,6 +1,5 @@
 package com.zwap.product_write_service.dto;
 
-import java.math.BigDecimal;
 
 import com.zwap.product_common.vo.GeoData;
 import jakarta.validation.Valid;
@@ -20,11 +19,13 @@ public class ProductCreateQry {
     private String imagePath;
 
     @NotNull(message = "price cannot be null")
-    @DecimalMin(value = "0.0", inclusive = false)
-    private BigDecimal price;
+    @Min(0)
+    @Max(1000000)
+    private Integer price;
 
     @NotNull(message = "quantity cannot be null")
     @Min(1)
+    @Max(1000000)
     private Integer quantity;
 
     @NotBlank (message = "city cannot be blank")
