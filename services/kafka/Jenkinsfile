@@ -87,34 +87,36 @@ pipeline {
 
                     echo "[Apply] Using Connect REST on localhost:$KAFKA_CONNECTOR_PORT"
 
-                    # PUT = create or update (idempotent)
-                    if [ -f config/product-mongodb-source-connector.json ]; then
-                      curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-mongodb-source-connector/config" \
-                        -H 'Content-Type: application/json' \
-                        --data-binary @config/product-mongodb-source-connector.json || { echo "[Error] Failed to apply product-mongodb-source-connector"; exit 1; }
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-mongodb-source-connector/config" \
+                      -H 'Content-Type: application/json' \
+                      --data-binary @config/product-mongodb-source-connector.json)
+                    if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
                       echo "[Apply] product-mongodb-source-connector applied"
                     else
-                      echo "[Error] config/product-mongodb-source-connector.json not found"
+                      echo "[Error] Failed to apply product-mongodb-source-connector. HTTP $status"
+                      cat response.json
                       exit 1
                     fi
 
-                    if [ -f config/product-redis-sink-connector.json ]; then
-                      curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-redis-sink-connector/config" \
-                        -H 'Content-Type: application/json' \
-                        --data-binary @config/product-redis-sink-connector.json || { echo "[Error] Failed to apply product-redis-sink-connector"; exit 1; }
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-redis-sink-connector/config" \
+                      -H 'Content-Type: application/json' \
+                      --data-binary @config/product-redis-sink-connector.json)
+                    if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
                       echo "[Apply] product-redis-sink-connector applied"
                     else
-                      echo "[Error] config/product-redis-sink-connector.json not found"
+                      echo "[Error] Failed to apply product-redis-sink-connector. HTTP $status"
+                      cat response.json
                       exit 1
                     fi
 
-                    if [ -f config/product-elasticsearch-sink-connector.json ]; then
-                      curl -s -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-elasticsearch-sink-connector/config" \
-                        -H 'Content-Type: application/json' \
-                        --data-binary @config/product-elasticsearch-sink-connector.json || { echo "[Error] Failed to apply product-elasticsearch-sink-connector"; exit 1; }
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "http://localhost:$KAFKA_CONNECTOR_PORT/connectors/product-elasticsearch-sink-connector/config" \
+                      -H 'Content-Type: application/json' \
+                      --data-binary @config/product-elasticsearch-sink-connector.json)
+                    if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
                       echo "[Apply] product-elasticsearch-sink-connector applied"
                     else
-                      echo "[Error] config/product-elasticsearch-sink-connector.json not found"
+                      echo "[Error] Failed to apply product-elasticsearch-sink-connector. HTTP $status"
+                      cat response.json
                       exit 1
                     fi
                 '''
