@@ -93,8 +93,6 @@ pipeline {
 
                     echo "[Apply] Using Connect REST on $KAFKA_CONNECTOR_URI"
 
-                    echo "$PRODUCT_MONGODB_SERVICE_URI"
-
                     status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-mongodb-source-connector/config" \
                       -H 'Content-Type: application/json' \
                       --data-binary @config/product-mongodb-source-connector.json)
