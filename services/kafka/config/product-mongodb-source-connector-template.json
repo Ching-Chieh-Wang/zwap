@@ -6,6 +6,7 @@
   "topic.prefix": "mongo",
   "database.include.list": "product",
   "snapshot.mode": "initial",
+  "decimal.handling.mode": "double",
 
   "database.history.kafka.bootstrap.servers": "${KAFKA_HOST}:${KAFKA_BROKER_PORT}",
   "database.history.kafka.topic": "dbhistory.mongodb",
