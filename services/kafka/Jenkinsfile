@@ -71,12 +71,16 @@ pipeline {
                     ]
                 ]) {
                     sh '''
+                        set -e
                         cd ~/zwap/services/kafka
                         envsubst < .env.template > .env
+                        if [ -f .env ]; then set -a; . ./.env; set +a; fi
                         cd config
-                        sed -E "s/\\$\\{env:([A-Za-z_][A-Za-z0-9_]*)\\}/\\$\\{\\1\\}/g" product-mongodb-source-connector-template.json | envsubst > product-mongodb-source-connector.json
-                        sed -E "s/\\$\\{env:([A-Za-z_][A-Za-z0-9_]*)\\}/\\$\\{\\1\\}/g" product-redis-sink-connector-template.json | envsubst > product-redis-sink-connector.json
-                        sed -E "s/\\$\\{env:([A-Za-z_][A-Za-z0-9_]*)\\}/\\$\\{\\1\\}/g" product-elasticsearch-sink-connector-template.json | envsubst > product-elasticsearch-sink-connector.json
+                        envsubst '$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT' \
+                          < product-mongodb-source-connector-template.json \
+                          > product-mongodb-source-connector.json
+                        envsubst < product-redis-sink-connector-template.json > product-redis-sink-connector.json
+                        envsubst < product-elasticsearch-sink-connector-template.json > product-elasticsearch-sink-connector.json
                     '''
                 }
             }
@@ -89,7 +93,7 @@ pipeline {
                     set -e
                     cd ~/zwap/services/kafka
 
-                    if [ -f .env ]; then set -a; . ./.env; set +a; fi
+
 
                     echo "[Apply] Using Connect REST on $KAFKA_CONNECTOR_URI"
 
