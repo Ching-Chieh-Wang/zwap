@@ -1,7 +1,6 @@
 package com.zwap.product_common.vo;
 
 import lombok.Data;
-import java.math.BigDecimal;
 
 @Data
 public class ProductVO {
@@ -10,7 +9,7 @@ public class ProductVO {
     private String title;
     private String description;
     private String imagePath;
-    private BigDecimal price;
+    private Integer price;
     private String city;
     private String locationName;
     private String address;

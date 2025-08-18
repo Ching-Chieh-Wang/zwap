@@ -2,13 +2,11 @@ package com.zwap.product_read_service.dto;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 @Data
 public class ProductSearchDTO {
     private String key;
-    private BigDecimal minPrice;
-    private BigDecimal maxPrice;
+    private Integer minPrice;
+    private Integer maxPrice;
     private String city;
     private String locationName;
     private GeoData geoData;

@@ -1,0 +1,136 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
+        VAULT_SERVICE_URI = 'http://linux-076:50006'
+        KAFKA_CONNECTOR_URI = 'http://linux-084:50001'
+    }
+
+
+    triggers {
+        GenericTrigger(
+            token: 'xiuxiulovejingjie',
+
+            genericVariables: [
+                [
+                    key: 'changed_files',
+                    value: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]',
+                    expressionType: 'JSONPath'
+                ]
+            ],
+
+            // This replaces the 'regexpFilter' block.
+            // Text and expression are direct parameters.
+            regexpFilterText: '$changed_files',
+            regexpFilterExpression: '.*services/kafka/.*',
+
+            printContributedVariables: false,
+            printPostContent: false
+
+
+        )
+    }
+
+    stages {
+        stage('Sparse Clone Kafka Folder') {
+            steps {
+                sh """
+                    set -e
+                    mkdir -p ~/zwap
+                    cd ~/zwap
+
+                    if [ ! -d ".git" ]; then
+                        git init -b main
+                        git remote add origin "${REPO_URL}"
+                        git config core.sparseCheckout true
+                        git sparse-checkout init --no-cone
+                        git sparse-checkout set services/kafka
+                        git pull origin main
+                    else
+                        git fetch origin
+                        git reset --hard origin/main
+                    fi
+                """
+            }
+        }
+
+        stage('Render .env from Vault and Upload') {
+            steps {
+                withVault([
+                    vaultSecrets: [
+                        [path: 'secret/product/common', secretValues: [
+                            [envVar: 'PRODUCT_MONGODB_SERVICE_URI', vaultKey: 'PRODUCT_MONGODB_SERVICE_URI']
+                        ]],
+                        [path: 'secret/product/product-read-service', secretValues: [
+                            [envVar: 'PRODUCT_REDIS_SERVICE_URI', vaultKey: 'PRODUCT_REDIS_SERVICE_URI']
+                        ]],
+                        [path: 'secret/product/product-search-service', secretValues: [
+                            [envVar: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD', vaultKey: 'PRODUCT_ELASTICSEARCH_SERVICE_PASSWORD']
+                        ]]
+                    ]
+                ]) {
+                    sh '''
+                        set -e
+                        cd ~/zwap/services/kafka
+                        envsubst < .env.template > .env
+                        if [ -f .env ]; then set -a; . ./.env; set +a; fi
+                        cd config
+                        envsubst '$PRODUCT_MONGODB_SERVICE_URI $KAFKA_HOST $KAFKA_BROKER_PORT' \
+                          < product-mongodb-source-connector-template.json \
+                          > product-mongodb-source-connector.json
+                        envsubst < product-redis-sink-connector-template.json > product-redis-sink-connector.json
+                        envsubst < product-elasticsearch-sink-connector-template.json > product-elasticsearch-sink-connector.json
+                    '''
+                }
+            }
+        }
+
+
+        stage('Apply Connectors via REST') {
+            steps {
+                sh '''
+                    set -e
+                    cd ~/zwap/services/kafka
+
+
+
+                    echo "[Apply] Using Connect REST on $KAFKA_CONNECTOR_URI"
+
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-mongodb-source-connector/config" \
+                      -H 'Content-Type: application/json' \
+                      --data-binary @config/product-mongodb-source-connector.json)
+                    if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
+                      echo "[Apply] product-mongodb-source-connector applied"
+                    else
+                      echo "[Error] Failed to apply product-mongodb-source-connector. HTTP $status"
+                      cat response.json
+                      exit 1
+                    fi
+
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-redis-sink-connector/config" \
+                      -H 'Content-Type: application/json' \
+                      --data-binary @config/product-redis-sink-connector.json)
+                    if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
+                      echo "[Apply] product-redis-sink-connector applied"
+                    else
+                      echo "[Error] Failed to apply product-redis-sink-connector. HTTP $status"
+                      cat response.json
+                      exit 1
+                    fi
+
+                    status=$(curl -s -o response.json -w "%{http_code}" -X PUT "$KAFKA_CONNECTOR_URI/connectors/product-elasticsearch-sink-connector/config" \
+                      -H 'Content-Type: application/json' \
+                      --data-binary @config/product-elasticsearch-sink-connector.json)
+                    if [ "$status" -ge 200 ] && [ "$status" -lt 300 ]; then
+                      echo "[Apply] product-elasticsearch-sink-connector applied"
+                    else
+                      echo "[Error] Failed to apply product-elasticsearch-sink-connector. HTTP $status"
+                      cat response.json
+                      exit 1
+                    fi
+                '''
+            }
+        }
+    }
+}
