@@ -85,19 +85,6 @@ pipeline {
             }
         }
 
-        stage('Setup env') {
-            steps {
-                sh '''
-                    set -e
-                    cd "$HOME/zwap/services/kafka"
-
-                    # Load .env so envsubst can see vars
-                    if [ -f .env ]; then
-                      set -a; . ./.env; set +a
-                    fi
-                '''
-            }
-        }
 
         stage('Apply Connectors via REST (084)') {
             steps {
@@ -107,9 +94,7 @@ pipeline {
                             set -e
                             cd ~/zwap/services/kafka
 
-                            # Load .env so the worker sees env vars used by ${env:...}
                             if [ -f .env ]; then set -a; . ./.env; set +a; fi
-                            PORT=${KAFKA_CONNECTOR_PORT}
 
                             echo "[Apply] Using Connect REST on localhost:${KAFKA_CONNECTOR_PORT}"
 
