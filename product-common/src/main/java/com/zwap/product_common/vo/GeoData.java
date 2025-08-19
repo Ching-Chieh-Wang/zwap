@@ -11,7 +11,7 @@ import lombok.*;
 @NoArgsConstructor(force = true)
 public class GeoData {
     @NotNull(message = "latitude cannot be null")
-    private double latitude;
+    private double lat;
     @NotNull(message = "longitude cannot be null")
-    private double longitude;
+    private double lon;
 }
