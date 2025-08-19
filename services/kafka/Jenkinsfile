@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    options {
+        // Prevent Jenkins from trying to do a "git checkout scm"
+        skipDefaultCheckout(true)
+    }
+
     environment {
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
         VAULT_SERVICE_URI = 'http://linux-076:50006'
