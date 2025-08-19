@@ -23,7 +23,7 @@ public class ProductSearchService implements IProductService {
     private ElasticsearchOperations ops;
 
     @Override
-     public ProductSearchVOs search(ProductSearchQry q) {
+    public ProductSearchVOs search(ProductSearchQry q) {
         var bool = new co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery.Builder();
 
         if (q.getSearchParam() != null && !q.getSearchParam().isBlank()) {
@@ -34,8 +34,43 @@ public class ProductSearchService implements IProductService {
             ));
         }
 
+        // Add price filter if present
+        Query priceFilter = buildPriceFilter(q);
+        if (priceFilter != null) {
+            bool.filter(priceFilter);
+        }
+
+        // Add geo distance filter if present
+        Query distanceFilter = buildDistanceFilter(q);
+        if (distanceFilter != null) {
+            bool.filter(distanceFilter);
+        }
+
+        // Convert BoolQuery -> Query
+        Query qb = new Query.Builder().bool(bool.build()).build();
+
+        // Wrap in Spring Data's NativeQuery
+        var nq = NativeQuery.builder()
+                .withQuery(qb)
+                .withPageable(PageRequest.of(0, 50))
+                .build();
+
+        // Execute
+        var results = ops.search(nq, ProductEs.class)
+                .map(SearchHit::getContent)
+                .toList();
+        ProductSearchVOs productSearchVOs = new ProductSearchVOs();
+        productSearchVOs.setProducts(results);
+        return productSearchVOs;
+    }
+
+    /**
+     * Builds a price filter query for the given search parameters.
+     * @param q The product search query DTO.
+     * @return Query for price filter, or null if not applicable.
+     */
+    private Query buildPriceFilter(ProductSearchQry q) {
         if (q.getMinPrice() != null || q.getMaxPrice() != null) {
-            // price range (numeric): use NumberRangeQuery -> RangeQuery
             var numRange = new NumberRangeQuery.Builder()
                     .field("price");
             if (q.getMinPrice() != null) {
@@ -45,24 +80,30 @@ public class ProductSearchService implements IProductService {
                 numRange.lte(q.getMaxPrice().doubleValue());
             }
             RangeQuery rq = new RangeQuery.Builder().number(numRange.build()).build();
-            bool.filter(new Query.Builder().range(rq).build());
+            return new Query.Builder().range(rq).build();
         }
+        return null;
+    }
 
-// Convert BoolQuery -> Query
-        Query qb = new Query.Builder().bool(bool.build()).build();
-
-// Wrap in Spring Data's NativeQuery
-        var nq = NativeQuery.builder()
-                .withQuery(qb)
-                .withPageable(PageRequest.of(0, 50))
-                .build();
-
-// Execute
-        var results = ops.search(nq, ProductEs.class)
-                .map(SearchHit::getContent)
-                .toList();
-        ProductSearchVOs out = new ProductSearchVOs();
-        out.setProducts(results);
-        return out;
+    /**
+     * Builds a geo distance filter query for the given search parameters.
+     * @param q The product search query DTO.
+     * @return Query for geo distance filter, or null if not applicable.
+     */
+    private Query buildDistanceFilter(ProductSearchQry q) {
+        if (q.getDistance() != null && q.getDistance() > 0) {
+            var geoDistance = new co.elastic.clients.elasticsearch._types.query_dsl.GeoDistanceQuery.Builder()
+                    .field("geoData")
+                    .distance(q.getDistance() + "mi")
+                    .location(l -> l
+                            .latlon(latlon -> latlon
+                                    .lat(q.getLocation().getLatitude())
+                                    .lon(q.getLocation().getLongitude())
+                            )
+                    )
+                    .build();
+            return new Query.Builder().geoDistance(geoDistance).build();
+        }
+        return null;
     }
 }
