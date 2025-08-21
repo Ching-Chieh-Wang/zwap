@@ -37,3 +37,4 @@ bootstrap.properties
 # Environment
 *.local.yml
 *.local.properties
+*.xlsx

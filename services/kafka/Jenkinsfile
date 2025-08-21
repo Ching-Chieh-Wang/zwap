@@ -59,7 +59,7 @@ pipeline {
             steps {
                 withVault([
                     vaultSecrets: [
-                        [path: 'secret/product/common', secretValues: [
+                        [path: 'secret/product/product-database', secretValues: [
                             [envVar: 'PRODUCT_MONGODB_SERVICE_URI', vaultKey: 'PRODUCT_MONGODB_SERVICE_URI']
                         ]],
                         [path: 'secret/product/product-read-service', secretValues: [
