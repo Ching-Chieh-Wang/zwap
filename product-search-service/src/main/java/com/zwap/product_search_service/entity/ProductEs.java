@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.elasticsearch.annotations.Document;
 import com.zwap.product_common.entity.Product ;
+import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.GeoPointField;
 import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 
@@ -13,5 +14,6 @@ import org.springframework.data.elasticsearch.core.geo.GeoPoint;
 public class ProductEs extends Product {
 
     @GeoPointField
-    private GeoPoint geoData;
+    @Field(name = "geoData")
+    private GeoPoint geoPoint;
 }

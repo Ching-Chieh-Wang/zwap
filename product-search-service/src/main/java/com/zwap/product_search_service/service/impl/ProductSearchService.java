@@ -97,8 +97,8 @@ public class ProductSearchService implements IProductService {
                     .distance(q.getDistance() + "mi")
                     .location(l -> l
                             .latlon(latlon -> latlon
-                                    .lat(q.getLocation().getLatitude())
-                                    .lon(q.getLocation().getLongitude())
+                                    .lat(q.getLocation().getLat())
+                                    .lon(q.getLocation().getLon())
                             )
                     )
                     .build();
