@@ -31,11 +31,3 @@ spring:
           password: ${GIT_CONFIG_REPO_PASSWORD}
           order: 2
 
-
-logging:
-  level:
-    # Spring Cloud Config Server internals
-    org.springframework.cloud.config.server.vault: DEBUG
-    org.springframework.cloud.config.server: DEBUG
-
-    # Spring Vault core libraries
