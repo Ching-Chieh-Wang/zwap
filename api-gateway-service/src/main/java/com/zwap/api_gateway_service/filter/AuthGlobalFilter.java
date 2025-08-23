@@ -1,5 +1,6 @@
 package com.zwap.api_gateway_service.filter;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -18,7 +19,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         return ReactiveSecurityContextHolder.getContext()
                 .flatMap(ctx -> {
-                    var auth = ctx.getAuthentication();
+                    Authentication auth = ctx.getAuthentication();
                     if (auth != null && auth.isAuthenticated() && auth instanceof JwtAuthenticationToken jwtAuth) {
                         Jwt jwt = (Jwt) jwtAuth.getPrincipal();
                         String uid = jwt.getClaimAsString("user_id");

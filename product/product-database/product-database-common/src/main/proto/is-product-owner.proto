@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.zwap.product.product_database.product_database_common.grpc;
+
+option java_package = "com.zwap.product.product_database.product_database_common.grpc";
+option java_multiple_files = true;
+option java_outer_classname = "IsProductOwnerProto";
+
+import "buf/validate/validate.proto";
+
+message IsProductOwnerGrpcRequest {
+  string id = 1 [(buf.validate.field).string.min_len = 1];
+  string userId = 2 [(buf.validate.field).string.min_len = 1];
+}
+
+message IsProductOwnerGrpcResponse {
+  bool isProductOwner = 1;
+}
+
+// The service definition
+service ProductReadService {
+  rpc IsProductOwner(IsProductOwnerGrpcRequest) returns (IsProductOwnerGrpcResponse);
+}

@@ -1,0 +1,20 @@
+package com.zwap.product.product_database.product_read_service.controller;
+
+import com.zwap.product.product_database.product_read_service.service.IProductService;
+import com.zwap.product.product_database.product_read_service.vo.ProductVO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+
+@RestController
+@RequestMapping("/product")
+public class ProductController {
+
+    @Autowired
+    IProductService productService;
+
+    @GetMapping("/{id}")
+    public ProductVO getVOById(@PathVariable("id") String id) {
+        return productService.getVOById(id);
+    }
+}
