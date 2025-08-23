@@ -1,0 +1,4 @@
+logging:
+  level:
+    org.springframework.cloud.config.server.vault: DEBUG
+    org.springframework.cloud.config.server: DEBUG
