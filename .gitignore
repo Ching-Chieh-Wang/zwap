@@ -23,7 +23,7 @@ logs/
 Thumbs.db
 
 # Maven / Gradle
-/target/
+**/target/
 build/
 .gradle/
 .mvn/
