@@ -19,13 +19,14 @@ func NewProducer() (*kafka.Producer, error) {
 	return kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": bootstrap})
 }
 
-func Publish(producer *kafka.Producer, topic string, p model.Product) error {
+func Publish(producer *kafka.Producer, topic string, key []byte, p model.Product) error {
 	data, err := json.Marshal(p)
 	if err != nil {
 		return err
 	}
 	return producer.Produce(&kafka.Message{
 		TopicPartition: kafka.TopicPartition{Topic: &topic, Partition: kafka.PartitionAny},
+		Key:            key,
 		Value:          data,
 	}, nil)
 }

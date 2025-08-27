@@ -38,7 +38,7 @@ func main() {
 
 	consumer.SubscribeTopics([]string{CONSUMER_SUBSCRIBE_TOPIC}, nil)
 
-	batch := []model.Product{}
+	batch := []model.ProductMsg{}
 	batchSize := 32
 	timeout := time.Second
 
@@ -47,31 +47,32 @@ func main() {
 		if err == nil {
 			p, err := kafkaio.ParseMessage(msg)
 			if err == nil {
-				batch = append(batch, p)
+				batch = append(batch, model.ProductMsg{Key: msg.Key, Product: p})
 			}
 		}
 
 		if len(batch) >= batchSize || (len(batch) > 0 && err != nil) {
 			texts := []string{}
 			for _, doc := range batch {
-				combined := fmt.Sprintf("Title: %s. Description: %s", doc.Title, doc.Description)
+				combined := doc.Product.Title + " . " + doc.Product.Description
 				texts = append(texts, combined)
 			}
 
 			embeddings, err := embedding.GetEmbeddings(texts)
 			if err != nil {
 				fmt.Println("❌ embedding error:", err)
-				batch = []model.Product{}
+				batch = []model.ProductMsg{}
 				continue
 			}
 
 			for i, doc := range batch {
-				doc.Embedding = embeddings[i]
-				kafkaio.Publish(producer, PRODUCER_PUBLISH_TOPIC, doc)
+				fmt.Println("key", doc.Key)
+				doc.Product.Embedding = embeddings[i]
+				kafkaio.Publish(producer, PRODUCER_PUBLISH_TOPIC, doc.Key, doc.Product)
 			}
 			producer.Flush(15 * 1000)
 			fmt.Printf("✅ enriched %d products\n", len(batch))
-			batch = []model.Product{}
+			batch = []model.ProductMsg{}
 		}
 	}
 }
