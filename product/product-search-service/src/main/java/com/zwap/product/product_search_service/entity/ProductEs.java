@@ -9,7 +9,7 @@ import org.springframework.data.elasticsearch.annotations.GeoPointField;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-@Document(indexName = "mongo.product.products")
+@Document(indexName = "mongo.product.products.embedded")
 public class ProductEs extends ProductBase {
 
     @GeoPointField
