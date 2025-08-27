@@ -20,7 +20,7 @@ func init() {
 
 const (
 	CONSUMER_SUBSCRIBE_TOPIC = "mongo.product.products"
-	PRODUCER_PUBLISH_TOPIC   = "products_embedded"
+	PRODUCER_PUBLISH_TOPIC   = "mongo.product.products.embedded"
 )
 
 func main() {

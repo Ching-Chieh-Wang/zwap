@@ -2,6 +2,7 @@ package kafkaio
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 
 	"text-to-embedding-service/model"
@@ -12,7 +13,7 @@ import (
 func NewProducer() (*kafka.Producer, error) {
 	bootstrap := os.Getenv("KAFKA_BOOTSTRAP_SERVERS")
 	if bootstrap == "" {
-		bootstrap = "localhost:9092"
+		return nil, fmt.Errorf("KAFKA_BOOTSTRAP_SERVERS environment variable is not set")
 	}
 
 	return kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": bootstrap})
