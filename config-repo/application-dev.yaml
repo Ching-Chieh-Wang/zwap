@@ -1,3 +1,0 @@
-service:
-  uri:
-    eureka: http://localhost:50008
