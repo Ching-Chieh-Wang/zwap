@@ -26,8 +26,9 @@ spring:
           profile-separator: '?profile='
           path-to-key: application
         git:
-          uri: https://github.com/Ching-Chieh-Wang/config-repo.git
+          uri: https://github.com/Ching-Chieh-Wang/zwap.git
           username: Ching-Chieh-Wang
           password: ${GIT_CONFIG_REPO_PASSWORD}
+          searchPaths: "config-repo"
           order: 2
 
