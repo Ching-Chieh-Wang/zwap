@@ -1,0 +1,16 @@
+server:
+  port: 50010
+
+spring:
+   config:
+     import: product-database.yaml
+
+grpc:
+  client:
+    product-read-service:
+      enableKeepAlive: true
+      negotiationType: plaintext
+
+
+
+

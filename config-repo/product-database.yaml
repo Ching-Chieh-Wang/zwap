@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      uri: '{vault}:product/common#PRODUCT_MONGODB_SERVICE_URI'
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: ${service.uri.eureka}/eureka
+
+
+      
+

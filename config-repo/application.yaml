@@ -1,0 +1,10 @@
+service:
+  uri:
+    eureka: http://linux-077:50008
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    serviceUrl:
+      defaultZone: ${service.uri.eureka}/eureka

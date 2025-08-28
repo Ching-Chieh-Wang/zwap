@@ -1,0 +1,8 @@
+server:
+  port: 50009
+spring:
+  config:
+    import: product-database.yaml
+  data:
+    redis:
+      url: '{vault}:product/product-read-service#PRODUCT_REDIS_SERVICE_URI'

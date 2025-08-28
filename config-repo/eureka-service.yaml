@@ -1,0 +1,12 @@
+
+server:
+  port: 50008
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: ${service.uri.eureka}/eureka/

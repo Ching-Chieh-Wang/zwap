@@ -1,0 +1,42 @@
+server:
+  port: 50007
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://securetoken.google.com/zwap-f5256
+          jwk-set-uri: https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+          filters:
+            - name: StripPrefix
+              args:
+                parts: 1
+            - name: CircuitBreaker
+              args:
+                name: "'cb-' + serviceId"
+                statusCodes:
+                  - "'NOT_FOUND'"
+                  - "'BAD_GATEWAY'"
+                  - "'SERVICE_UNAVAILABLE'"
+                  - "'GATEWAY_TIMEOUT'"
+                fallbackUri: "'forward:/fallback'"
+firebase:
+  project-id: zwap-f5256
+
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 100
+        failureRateThreshold: 50
+        slowCallRateThreshold: 100
+        slowCallDurationThreshold: 2s
+        waitDurationInOpenState: 10s
