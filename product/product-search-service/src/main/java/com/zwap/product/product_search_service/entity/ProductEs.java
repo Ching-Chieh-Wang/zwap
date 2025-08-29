@@ -1,17 +1,22 @@
 package com.zwap.product.product_search_service.entity;
 
-import com.zwap.product.product_common.model.GeoData;
-import com.zwap.product.product_common.model.ProductBase;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.GeoPointField;
+import org.springframework.data.elasticsearch.annotations.ScriptedField;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
 @Document(indexName = "mongo.product.products.embedded")
-public class ProductEs extends ProductBase {
+public class ProductEs {
+    
+    private String id;
+    private String userId;
+    private String userName;
+    private String userImgUrl;
+    private String title;
+    private String description;
+    private String imageUrl;
+    private Integer price;
 
-    @GeoPointField
-    private GeoData geoData;
+    @ScriptedField
+    private double distance;
 }
