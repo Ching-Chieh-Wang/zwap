@@ -1,11 +1,15 @@
 package com.zwap.product.product_search_service.vo;
 
-import com.zwap.product.product_search_service.entity.ProductEs;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductSearchVOs {
-    List<ProductEs> products;
+    private List<ProductSearchVO> products;
 }

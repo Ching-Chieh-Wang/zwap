@@ -10,17 +10,24 @@ import com.zwap.product.product_search_service.vo.ProductSearchVOs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
-import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
+import org.springframework.data.elasticsearch.core.query.ScriptData;
+import org.springframework.data.elasticsearch.core.query.ScriptType;
+import org.springframework.data.elasticsearch.core.query.ScriptedField;
 import org.springframework.stereotype.Service;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import com.zwap.product.product_search_service.entity.ProductEs;
+import com.zwap.product.product_search_service.converter.ProductConverter;
+
+import java.util.Map;
 
 
 @Service
 public class ProductSearchService implements IProductService {
 
     @Autowired
-    private ElasticsearchOperations ops;
+    private ElasticsearchOperations elasticsearchOperations;
 
     @Override
     public ProductSearchVOs search(ProductSearchQry q) {
@@ -53,15 +60,32 @@ public class ProductSearchService implements IProductService {
         var nq = NativeQuery.builder()
                 .withQuery(qb)
                 .withPageable(PageRequest.of(0, 50))
-                .build();
+                .withSourceFilter(new FetchSourceFilter(new String[]{"*"}, null))
+                .withScriptedField(
+                        ScriptedField.of(
+                                "distance",
+                                new ScriptData(
+                                        ScriptType.INLINE,
+                                        "painless",
+                                        "doc['geoData'].size() == 0 ? Double.POSITIVE_INFINITY : doc['geoData'].planeDistance(params.lat, params.lon) * 3958.8",
+                                        null,
+                                        Map.of(
+                                                "lat", q.getGeoData().getLat(),
+                                                "lon", q.getGeoData().getLon()
+                                        )
+                                )
+                        )
+                ).build();
+
 
         // Execute
-        var results = ops.search(nq, ProductEs.class)
-                .map(SearchHit::getContent)
-                .toList();
-        ProductSearchVOs productSearchVOs = new ProductSearchVOs();
-        productSearchVOs.setProducts(results);
-        return productSearchVOs;
+        SearchHits<ProductEs> results = elasticsearchOperations.search(nq, ProductEs.class);
+
+
+        return new ProductSearchVOs(results.getSearchHits().stream().map(hit -> {
+            ProductEs entity = hit.getContent();
+            return ProductConverter.toVO(entity);
+        }).toList());
     }
 
     /**
@@ -98,8 +122,8 @@ public class ProductSearchService implements IProductService {
                     .distance(q.getDistance() + "mi")
                     .location(l -> l
                             .latlon(latlon -> latlon
-                                    .lat(q.getLocation().getLat())
-                                    .lon(q.getLocation().getLon())
+                                    .lat(q.getGeoData().getLat())
+                                    .lon(q.getGeoData().getLon())
                             )
                     )
                     .build();
