@@ -5,8 +5,8 @@ import com.zwap.product.product_database.product_database_common.entity.ProductM
 import com.zwap.product.product_database.product_database_common.exception.ProductNotFoundException;
 import com.zwap.product.product_database.product_database_common.exception.ProductPendingException;
 import com.zwap.product.product_database.product_database_common.mapper.IProductMapper;
-import com.zwap.product.product_database.product_database_common.variable.RedisPrefix;
-import com.zwap.product.product_database.product_database_common.variable.RedisTTL;
+import com.zwap.product.product_database.product_database_common.constant.RedisPrefix;
+import com.zwap.product.product_database.product_database_common.constant.RedisTTL;
 import com.zwap.product.product_database.product_read_service.converter.ProductConverter;
 import com.zwap.product.product_database.product_read_service.service.IProductService;
 import com.zwap.product.product_database.product_read_service.vo.ProductVO;
@@ -54,7 +54,6 @@ public class ProductServiceImpl implements IProductService {
         String cachedProduct = stringRedisTemplate.opsForValue().get(productKey);
 
         if (cachedProduct == null) {
-            log.debug("Cache miss for product ID: {}", id);
             // Cache miss, proceed to load from database
             final String token = Thread.currentThread().getName() + "-" + UUID.randomUUID();
             final String lockValue = LOCKED + ":" + token;

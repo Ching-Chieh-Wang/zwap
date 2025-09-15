@@ -19,9 +19,7 @@ public class SecurityConfig {
                 .authorizeExchange(exchanges ->
                         exchanges
                                 // Public/Unauthenticated Endpoints
-                                .pathMatchers("/auth/**").permitAll() // Example: /auth/login, /auth/register
-                                .pathMatchers("/public/**").permitAll() // Example: /public/products, /public/news
-                                .pathMatchers("/actuator/**").permitAll() // Health checks, info (if you want them public)
+                                .pathMatchers("/user-service/user/**").permitAll() // Example: /auth/login, /auth/register
                                 // Authenticated Endpoints
                                 .anyExchange().authenticated() // All other requests require authentication
                 )
