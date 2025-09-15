@@ -1,4 +1,4 @@
-package com.zwap.product.product_database.product_database_common.variable;
+package com.zwap.product.product_database.product_database_common.constant;
 
 import lombok.Getter;
 
