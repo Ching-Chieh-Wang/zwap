@@ -9,8 +9,8 @@ spring:
     name: config-service
   cloud:
     vault:
-      host: ${VAULT_SERVICE_HOST}
-      port: ${VAULT_SERVICE_PORT}
+      host: linux-076
+      port: 50006
       scheme: http
       authentication: TOKEN
       token: ${VAULT_CONFIG_SERVICE_TOKEN}
@@ -19,8 +19,8 @@ spring:
     config:
       server:
         vault:
-          host: ${VAULT_SERVICE_HOST}
-          port: ${VAULT_SERVICE_PORT}
+          host: linux-076
+          port: 50006
           kv-version: 2
           order: 1
           profile-separator: '?profile='
