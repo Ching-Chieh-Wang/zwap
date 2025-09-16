@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    parameters {
+        string(name: 'SERVICE_ROLE', description: 'Vault AppRole for target service')
+    }
+    environment {
+        VAULT_ADDR = 'http://linux-076:50006'
+    }
+    stages {
+        stage('Mint Token') {
+            steps {
+                withCredentials([string(credentialsId: 'jenkins-vault-token', variable: 'JENKINS_VAULT_TOKEN')]) {
+                    script {
+                        def roleResp = httpRequest(
+                            httpMode: 'GET',
+                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE_ROLE}/role-id",
+                            customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
+                        )
+                        def roleId = readJSON text: roleResp.content
+                        roleId = roleId.data.role_id
+
+                        def secretResp = httpRequest(
+                            httpMode: 'POST',
+                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE_ROLE}/secret-id",
+                            customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
+                        )
+                        def secretId = readJSON text: secretResp.content
+                        secretId = secretId.data.secret_id
+
+                        def loginResp = httpRequest(
+                            httpMode: 'POST',
+                            url: "${VAULT_ADDR}/v1/auth/approle/login",
+                            contentType: 'APPLICATION_JSON',
+                            requestBody: groovy.json.JsonOutput.toJson([role_id: roleId, secret_id: secretId])
+                        )
+                        def loginJson = readJSON text: loginResp.content
+                        def token = loginJson.auth.client_token
+
+                        // Write as artifact so parent pipeline can fetch
+                        writeFile file: 'vault_token.txt', text: token
+                        archiveArtifacts artifacts: 'vault_token.txt', fingerprint: true
+                        echo "[Vault Worker] Minted token for ${params.SERVICE_ROLE}"
+                    }
+                }
+            }
+        }
+    }
+}
