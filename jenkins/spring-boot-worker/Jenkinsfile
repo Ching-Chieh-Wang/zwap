@@ -98,7 +98,7 @@ pipeline {
                                 """
                             }
                         } else {
-                            echo "No deployment configuration found for service: ${service}"
+                            error("No deployment configuration found for service: ${service}")
                         }
                     }
                 }
