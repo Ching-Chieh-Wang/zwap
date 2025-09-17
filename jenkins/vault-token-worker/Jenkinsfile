@@ -39,7 +39,7 @@ pipeline {
                         // Dynamically save the token to Jenkins Credentials store
                         def creds_store = jenkins.model.Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
                         def creds_domain = com.cloudbees.plugins.credentials.domains.Domain.global()
-                        def credId = "VAULT-${params.SERVICE}-TOKEN"
+                        def credId = "VAULT_${params.SERVICE}.toUpperCase().replace('-', '_')_TOKEN"
                         def description = "Vault token for ${params.SERVICE}"
                         // Remove existing credential if it exists
                         def toRemove = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
