@@ -96,7 +96,8 @@ pipeline {
                                sh """
                                    ssh -o StrictHostKeyChecking=no ${host} \\
                                    'pkill -f "${service}.jar" || true; \\
-                                    nohup java -jar ${env.HOME}/zwap/${service}/${service}.jar > ${env.HOME}/zwap/${service}/app.log 2>&1 &'
+                                    nohup java -jar ~/zwap/${service}/${service}.jar > ~/zwap/${service}/app.log 2>&1 &
+                                    disown'
                                """
                            }
                         } else {
