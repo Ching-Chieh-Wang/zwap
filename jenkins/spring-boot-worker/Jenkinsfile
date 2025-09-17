@@ -68,7 +68,7 @@ pipeline {
             stage('Read Deploy Config') {
                 steps {
                     script {
-                        def deployConfig = readYaml(file: 'jenkins/deploy-config.yaml')
+                        def deployConfig = readYaml(file: '~/zwap/jenkins/deploy-config.yaml')
                         env.DEPLOY_CONFIG = groovy.json.JsonOutput.toJson(deployConfig)
                     }
                 }
