@@ -88,7 +88,7 @@ pipeline {
                         def service = env.JOB_NAME.split("/").last()
                         def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
 
-                        def server = deployConfig[service]?.server
+                        def server = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
                         if (server && port) {
                             sshagent(credentials: ['ssh-deploy']) {
