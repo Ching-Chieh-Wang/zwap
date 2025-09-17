@@ -69,6 +69,14 @@ pipeline {
                 }
             }
 
+            stage('Mint Vault Token') {
+                steps {
+                    build job: 'vault-token-worker',
+                          parameters: [string(name: 'SERVICE', value: 'eureka-service')],
+                          wait: true
+                }
+            }
+
             stage('Build') {
                 steps {
                     script {
