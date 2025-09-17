@@ -111,10 +111,10 @@ pipeline {
             }
 
     }
-    post {
-        always {
-            cleanWs()
-            echo 'Workspace cleaned up after pipeline run.'
-        }
-    }
+//     post {
+//         always {
+//             cleanWs()
+//             echo 'Workspace cleaned up after pipeline run.'
+//         }
+//     }
 }
