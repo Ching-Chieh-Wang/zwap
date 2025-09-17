@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     environment {
+        SSH_KEY = 'linux-server'
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
         VAULT_SERVICE_URI = 'http://linux-076:50006'
         KAFKA_CONNECTOR_URI = 'http://linux-084:50001'
@@ -91,8 +92,8 @@ pipeline {
                         def host = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
                         if (host && port) {
-                            sshagent(credentials: ['ssh-deploy']) {
-                                sshCommand remote: [name: service, host: host, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: """
+                           sshagent(credentials: [SSH_KEY]) {
+                                sshCommand remote: [name: service, host: host, port: port.toInteger(), user: 'jenkins', credentialsId: SSH_KEY], command: """
                                     pkill -f "${service}.jar" || true
                                     nohup java -jar ${env.HOME}/zwap/${service}/${service}.jar > ${env.HOME}/zwap/${service}/app.log 2>&1 &
                                 """
@@ -105,10 +106,10 @@ pipeline {
             }
 
     }
-//     post {
-//         always {
-//             cleanWs()
-//             echo 'Workspace cleaned up after pipeline run.'
-//         }
-//     }
+    post {
+        always {
+            cleanWs()
+            echo 'Workspace cleaned up after pipeline run.'
+        }
+    }
 }
