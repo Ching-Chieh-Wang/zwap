@@ -38,6 +38,8 @@ pipeline {
 
                         // Write as artifact so parent pipeline can fetch
                         writeFile file: 'vault_token.txt', text: token
+                        sh 'pwd'
+                        sh 'ls -lh'
                         archiveArtifacts artifacts: 'vault_token.txt', fingerprint: true
                         echo "[Vault Worker] Minted token for ${params.SERVICE_ROLE}"
                     }
