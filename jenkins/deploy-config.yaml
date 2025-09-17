@@ -1,0 +1,21 @@
+api-gateway-service:
+  host: linux-078
+  port: 50007
+eureka-service:
+  host: linux-077
+  port: 50008
+product-read-service:
+  host: linux-079
+  port: 50009
+product-write-service:
+  host: linux-080
+  port: 50010
+product-search-service:
+  host: linux-081
+  port: 50011
+user-service:
+  host: linux-082
+  port: 50012
+config-service:
+  host: linux-075
+  port: 50013

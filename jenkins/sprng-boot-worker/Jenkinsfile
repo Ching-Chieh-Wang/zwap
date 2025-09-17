@@ -1,0 +1,89 @@
+pipeline {
+    agent any
+
+    environment {
+        REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
+        VAULT_SERVICE_URI = 'http://linux-076:50006'
+        KAFKA_CONNECTOR_URI = 'http://linux-084:50001'
+    }
+
+
+    triggers {
+        GenericTrigger(
+            token: 'xiuxiulovejingjie',
+
+            genericVariables: [
+                [
+                    key: 'changed_files',
+                    value: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]',
+                    expressionType: 'JSONPath'
+                ]
+            ],
+
+            // This replaces the 'regexpFilter' block.
+            // Text and expression are direct parameters.
+            regexpFilterText: '$changed_files',
+
+            printContributedVariables: false,
+            printPostContent: false
+
+
+        )
+    }
+
+    stages {
+
+            stage('Read Deploy Config') {
+                steps {
+                    script {
+                        def deployConfig = readYaml(file: 'jenkins/deploy-config.yaml')
+                        env.DEPLOY_CONFIG = groovy.json.JsonOutput.toJson(deployConfig)
+                    }
+                }
+            }
+
+            stage('Sparse Clone') {
+                steps {
+                    script {
+                        def service = env.JOB_NAME.split("/").last()
+                        echo "Building service: ${service}"
+                        sh """
+                            set -e
+                            mkdir -p ~/zwap
+                            cd ~/zwap
+
+                            if [ ! -d ".git" ]; then
+                                git init -b main
+                                git remote add origin "${REPO_URL}"
+                                git config core.sparseCheckout true
+                                git sparse-checkout init --no-cone
+                                git sparse-checkout set ${service}
+                                git pull origin main
+                            else
+                                git fetch origin
+                                git reset --hard origin/main
+                            fi
+                        """
+
+                        def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
+
+                        // Build the Spring Boot app
+                        sh "mvn clean package -DskipTests -f services/${service}/pom.xml"
+
+                        // Deploy the artifact
+                        def server = deployConfig[service]?.server
+                        def port = deployConfig[service]?.port
+                        if (server && port) {
+                            sshagent(credentials: ['ssh-deploy']) {
+                                sh "scp -o StrictHostKeyChecking=no services/${service}/target/${service}.jar jenkins@${server}:/home/jenkins/${service}.jar"
+                                sshCommand remote: [name: service, host: server, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: "systemctl restart ${service}"
+                            }
+                        } else {
+                            echo "No deployment configuration found for service: ${service}"
+                        }
+                    }
+                }
+            }
+
+    }
+}
