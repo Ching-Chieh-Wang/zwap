@@ -32,6 +32,11 @@ pipeline {
     }
 
     stages {
+            stage('Cleanup') {
+                steps {
+                    cleanWs()
+                }
+            }
 
             stage('Read Deploy Config') {
                 steps {
@@ -68,15 +73,23 @@ pipeline {
                         def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
 
                         // Build the Spring Boot app
-                        sh "mvn clean package -DskipTests -f services/${service}/pom.xml"
+                        sh "mvn clean package -DskipTests -f ${service}/pom.xml"
+
+                        // Ensure the target directory exists and move the jar
+                        sh """
+                            mkdir -p ~/zwap/${service}
+                            mv ${service}/target/${service}*.jar ~/zwap/${service}/${service}.jar
+                        """
 
                         // Deploy the artifact
                         def server = deployConfig[service]?.server
                         def port = deployConfig[service]?.port
                         if (server && port) {
                             sshagent(credentials: ['ssh-deploy']) {
-                                sh "scp -o StrictHostKeyChecking=no services/${service}/target/${service}.jar jenkins@${server}:/home/jenkins/${service}.jar"
-                                sshCommand remote: [name: service, host: server, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: "systemctl restart ${service}"
+                                sshCommand remote: [name: service, host: server, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: '''
+                                    pkill -f "${service}.jar" || true
+                                    nohup java -jar ~/zwap/${service}/${service}.jar > ~/zwap/${service}/app.log 2>&1 &
+                                '''
                             }
                         } else {
                             echo "No deployment configuration found for service: ${service}"
@@ -85,5 +98,11 @@ pipeline {
                 }
             }
 
+    }
+    post {
+        always {
+            cleanWs()
+            echo 'Workspace cleaned up after pipeline run.'
+        }
     }
 }
