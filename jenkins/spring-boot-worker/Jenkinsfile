@@ -49,14 +49,11 @@ pipeline {
                             mkdir -p ~/zwap
                             cd ~/zwap
 
-                            if [ ! -d ".git" ]; then
-                                git init -b main
-                                git remote add origin "${REPO_URL}"
-                                git config core.sparseCheckout true
-                                git sparse-checkout init --no-cone
-                                git sparse-checkout set ${service} jenkins
-                                git pull origin main
+                            if [ ! -d "${HOME}/zwap/.git" ]; then
+                                rm -rf ${HOME}/zwap
+                                git clone --branch main ${REPO_URL} ${HOME}/zwap
                             else
+                                cd ${HOME}/zwap
                                 git fetch origin
                                 git reset --hard origin/main
                             fi
@@ -79,7 +76,7 @@ pipeline {
                     script {
                         def service = env.JOB_NAME.split("/").last()
                         echo "Building service: ${service}"
-                        sh "mvn clean package -DskipTests -f ${env.HOME}/zwap/${service}/pom.xml"
+                        sh "mvn clean package -DskipTests -am -f ${env.HOME}/zwap/${service}/pom.xml"
                         sh """
                             mkdir -p ${env.HOME}/zwap/${service}
                             mv ${env.HOME}/zwap/${service}/target/${service}*.jar ${env.HOME}/zwap/${service}/${service}.jar
