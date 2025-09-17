@@ -93,11 +93,12 @@ pipeline {
                         def port = deployConfig[service]?.port
                         if (host && port) {
                            sshagent(credentials: [SSH_KEY]) {
-                                sshCommand remote: [name: service, host: host, port: port.toInteger(), user: 'jenkins', credentialsId: SSH_KEY], command: """
-                                    pkill -f "${service}.jar" || true
-                                    nohup java -jar ${env.HOME}/zwap/${service}/${service}.jar > ${env.HOME}/zwap/${service}/app.log 2>&1 &
-                                """
-                            }
+                               sh """
+                                   ssh -o StrictHostKeyChecking=no ${host} \\
+                                   'pkill -f "${service}.jar" || true; \\
+                                    nohup java -jar ${env.HOME}/zwap/${service}/${service}.jar > ${env.HOME}/zwap/${service}/app.log 2>&1 &'
+                               """
+                           }
                         } else {
                             error("No deployment configuration found for service: ${service}")
                         }
