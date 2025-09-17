@@ -13,7 +13,7 @@ pipeline {
                     script {
                         def roleResp = httpRequest(
                             httpMode: 'GET',
-                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE_ROLE}-approle/role-id",
+                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE}-approle/role-id",
                             customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
                         )
                         def roleId = readJSON text: roleResp.content
@@ -21,7 +21,7 @@ pipeline {
 
                         def secretResp = httpRequest(
                             httpMode: 'POST',
-                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE_ROLE}-approle/secret-id",
+                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE}-approle/secret-id",
                             customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
                         )
                         def secretId = readJSON text: secretResp.content
