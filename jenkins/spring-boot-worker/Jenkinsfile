@@ -94,13 +94,13 @@ pipeline {
                         if (host && port) {
                            sshagent(credentials: [SSH_KEY]) {
                                sh """
-                                   ssh -o StrictHostKeyChecking=no ${host} "
-                                     pkill -f '${service}.jar' || true;
-                                     mkdir -p ~/logs;
-                                     nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 & \
-                                     pid=$!; \
-                                     echo "Started ${service} with PID $pid"
-                                   "
+                                    ssh -o StrictHostKeyChecking=no ${host} "
+                                      pkill -f '${service}.jar' || true;
+                                      mkdir -p ~/logs;
+                                      nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 & \
+                                      pid=\$!; \
+                                      echo 'Started ${service} with PID' \$pid
+                                    "
                                """
                            }
                         } else {
