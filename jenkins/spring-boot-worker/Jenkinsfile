@@ -90,7 +90,7 @@ pipeline {
 
                         def host = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
-                        if (server && port) {
+                        if (host && port) {
                             sshagent(credentials: ['ssh-deploy']) {
                                 sshCommand remote: [name: service, host: host, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: """
                                     pkill -f "${service}.jar" || true
