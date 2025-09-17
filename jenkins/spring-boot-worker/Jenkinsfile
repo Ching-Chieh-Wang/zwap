@@ -88,11 +88,11 @@ pipeline {
                         def service = env.JOB_NAME.split("/").last()
                         def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
 
-                        def server = deployConfig[service]?.host
+                        def host = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
                         if (server && port) {
                             sshagent(credentials: ['ssh-deploy']) {
-                                sshCommand remote: [name: service, host: server, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: """
+                                sshCommand remote: [name: service, host: host, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: """
                                     pkill -f "${service}.jar" || true
                                     nohup java -jar ${env.HOME}/zwap/${service}/${service}.jar > ${env.HOME}/zwap/${service}/app.log 2>&1 &
                                 """
