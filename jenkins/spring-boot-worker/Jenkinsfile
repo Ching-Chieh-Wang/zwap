@@ -72,7 +72,7 @@ pipeline {
             stage('Mint Vault Token') {
                 steps {
                     build job: 'vault-token-worker',
-                          parameters: [string(name: 'SERVICE', value: 'eureka-service')],
+                          parameters: [string(name: 'SERVICE', value: env.JOB_NAME.split("/").last())],
                           wait: true
                 }
             }
