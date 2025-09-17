@@ -53,7 +53,7 @@ pipeline {
                                 git remote add origin "${REPO_URL}"
                                 git config core.sparseCheckout true
                                 git sparse-checkout init --no-cone
-                                git sparse-checkout set ${service}
+                                git sparse-checkout set ${service} jenkins
                                 git pull origin main
                             else
                                 git fetch origin
