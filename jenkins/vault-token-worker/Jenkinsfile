@@ -9,12 +9,12 @@ pipeline {
     stages {
         stage('Mint Token') {
             steps {
-                withCredentials([string(credentialsId: 'jenkins-vault-token', variable: 'JENKINS_VAULT_TOKEN')]) {
+                withCredentials([string(credentialsId: 'VAULT_JENKINS_TOKEN', variable: 'VAULT_JENKINS_TOKEN')]) {
                     script {
                         def roleResp = httpRequest(
                             httpMode: 'GET',
                             url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE}-approle/role-id",
-                            customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
+                            customHeaders: [[name: 'X-Vault-Token', value: env.VAULT_JENKINS_TOKEN]]
                         )
                         def roleId = readJSON text: roleResp.content
                         roleId = roleId.data.role_id
@@ -22,7 +22,7 @@ pipeline {
                         def secretResp = httpRequest(
                             httpMode: 'POST',
                             url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE}-approle/secret-id",
-                            customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
+                            customHeaders: [[name: 'X-Vault-Token', value: env.VAULT_JENKINS_TOKEN]]
                         )
                         def secretId = readJSON text: secretResp.content
                         secretId = secretId.data.secret_id
