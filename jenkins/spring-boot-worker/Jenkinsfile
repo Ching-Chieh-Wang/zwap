@@ -110,12 +110,12 @@ pipeline {
                                      echo "[DEBUG] Ensuring logs directory exists"
                                      mkdir -p ~/logs
                                      echo "[DEBUG] Starting ${service} with nohup"
-                                     nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
-                                     pid=$!
-                                     echo "[DEBUG] Started ${service} with PID $pid"
-                                     sleep 10
-                                     echo "[DEBUG] Last 20 log lines:"
-                                     tail -n 20 ~/logs/${service}.log
+                                    nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
+                                    pid=\$!
+                                    echo "[DEBUG] Started ${service} with PID \$pid"
+                                    sleep 10
+                                    echo "[DEBUG] Last 20 log lines:"
+                                    tail -n 20 ~/logs/${service}.log
                                    '
                                """
                            }
