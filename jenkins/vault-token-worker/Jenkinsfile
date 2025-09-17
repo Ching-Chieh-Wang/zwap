@@ -37,30 +37,25 @@ pipeline {
                         def token = loginJson.auth.client_token
 
                         // Dynamically save the token to Jenkins Credentials store
-                        import com.cloudbees.plugins.credentials.*
-                        import com.cloudbees.plugins.credentials.domains.*
-                        import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl
-                        import hudson.util.Secret
-
-                        def creds_store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
-                        def creds_domain = Domain.global()
+                        def creds_store = jenkins.model.Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
+                        def creds_domain = com.cloudbees.plugins.credentials.domains.Domain.global()
                         def credId = "VAULT-${params.SERVICE}-TOKEN"
                         def description = "Vault token for ${params.SERVICE}"
                         // Remove existing credential if it exists
                         def toRemove = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
-                            StringCredentialsImpl.class,
-                            Jenkins.instance,
+                            org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl.class,
+                            jenkins.model.Jenkins.instance,
                             null,
                             null
                         ).find { it.id == credId }
                         if (toRemove) {
                             creds_store.removeCredentials(creds_domain, toRemove)
                         }
-                        def newCred = new StringCredentialsImpl(
-                            CredentialsScope.GLOBAL,
+                        def newCred = new org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl(
+                            com.cloudbees.plugins.credentials.CredentialsScope.GLOBAL,
                             credId,
                             description,
-                            Secret.fromString(token)
+                            hudson.util.Secret.fromString(token)
                         )
                         creds_store.addCredentials(creds_domain, newCred)
                         echo "[Vault Worker] Minted and stored token credential '${credId}' for ${params.SERVICE_ROLE}"
