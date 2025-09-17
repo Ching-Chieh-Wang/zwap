@@ -133,6 +133,34 @@ pipeline {
                 }
             }
 
+            stage('Health Check') {
+                steps {
+                    script {
+                        def service = env.JOB_NAME.split("/").last()
+                        def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
+
+                        def host = deployConfig[service]?.host
+                        def port = deployConfig[service]?.port
+                        if (host && port) {
+                            sh """
+                                sleep 15
+                                curl -f http://${host}:${port}/actuator/health
+                            """
+                        } else {
+                            error("No deployment configuration found for service: ${service}")
+                        }
+                    }
+                }
+                post {
+                    failure {
+                        script {
+                            def service = env.JOB_NAME.split("/").last()
+                            error("Health check failed for ${service}")
+                        }
+                    }
+                }
+            }
+
     }
     post {
         always {
