@@ -42,12 +42,9 @@ pipeline {
             stage('Clone') {
                 steps {
                     script {
-                        def service = env.JOB_NAME.split("/").last()
-                        echo "Cloning service: ${service}"
+                        echo "Cloning repo"
                         sh """
                             set -e
-                            mkdir -p ~/zwap
-                            cd ~/zwap
 
                             if [ ! -d "${HOME}/zwap/.git" ]; then
                                 rm -rf ${HOME}/zwap
