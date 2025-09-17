@@ -91,15 +91,11 @@ pipeline {
 
                         def host = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
-                        echo "DEBUG: Service = ${service}"
-                        echo "DEBUG: Host = ${host}"
-                        echo "DEBUG: Port = ${port}"
                         if (host && port) {
                            sshagent(credentials: [SSH_KEY]) {
                                sh """
                                    ssh -o StrictHostKeyChecking=no ${host} '
                                      set -e
-                                     echo "[DEBUG] SSH connected to ${host} for ${service}"
 
                                      # Make sure logs and pids folder exist
                                      mkdir -p ~/logs ~/pids
@@ -107,22 +103,15 @@ pipeline {
                                      # Stop old process if PID file exists
                                      if [ -f ~/pids/${service}.pid ]; then
                                        oldpid=\$(cat ~/pids/${service}.pid)
-                                       echo "[DEBUG] Stopping ${service} with PID \$oldpid"
                                        kill -9 \$oldpid || true
                                        rm -f ~/pids/${service}.pid
                                      fi
 
                                      # Start new process
-                                     echo "[DEBUG] Starting ${service} with nohup"
                                      nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
                                      pid=\$!
                                      echo \$pid > ~/pids/${service}.pid
                                      echo "[Deploy] Started ${service} with PID \$pid"
-
-                                     # Show last 20 log lines for verification
-                                     sleep 5
-                                     echo "[DEBUG] Last 20 log lines:"
-                                     tail -n 20 ~/logs/${service}.log || echo "[DEBUG] No log file yet"
                                    '
                                """
                            }
