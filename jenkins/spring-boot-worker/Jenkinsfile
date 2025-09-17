@@ -117,6 +117,7 @@ pipeline {
                                             rm -f ~/logs/${service}.log
                                           fi
 
+                                          echo "[DEBUG] Injecting ${vaultEnvVar}: \${${vaultEnvVar}:0:5}..."
                                           nohup env ${vaultEnvVar}=\${${vaultEnvVar}} java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
                                           pid=\$!
                                           echo \$pid > ~/pids/${service}.pid
