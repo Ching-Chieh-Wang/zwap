@@ -111,10 +111,11 @@ pipeline {
                                      mkdir -p ~/logs
                                      echo "[DEBUG] Starting ${service} with nohup"
                                      nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
-                                     pid=\$!
-                                     echo "[DEBUG] Writing PID to ~/logs/${service}.pid"
-                                     echo \$pid > ~/logs/${service}.pid
-                                     echo "[Deploy] Started ${service} with PID \$pid"
+                                     pid=$!
+                                     echo "[DEBUG] Started ${service} with PID $pid"
+                                     sleep 10
+                                     echo "[DEBUG] Last 20 log lines:"
+                                     tail -n 20 ~/logs/${service}.log
                                    '
                                """
                            }
