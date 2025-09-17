@@ -101,7 +101,8 @@ pipeline {
                         def port = deployConfig[service]?.port
                         if (host && port) {
                             // Securely inject the token minted by vault-token-worker
-                            def vaultEnvVar = "VAULT_${service.toUpperCase().replace('-', '_')}_TOKEN"
+                            def normalizedService = service.toUpperCase().replace('-', '_')
+                            def vaultEnvVar = "VAULT_${normalizedService}_TOKEN"
                             withCredentials([string(credentialsId: "VAULT-${service}-TOKEN", variable: vaultEnvVar)]) {
                                 sshagent(credentials: [SSH_KEY]) {
                                     sh """
