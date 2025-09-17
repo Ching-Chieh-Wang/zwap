@@ -1,10 +1,7 @@
 spring:
   application:
     name: eureka-service
-  config:
-    import: configserver:http://localhost:50013
+  config.import: configserver:http://localhost:50013
   cloud:
     config:
-      token:  ${VAULT_EUREKA_SERVICE_TOKEN}
-
-
+      token: ${VAULT_EUREKA_SERVICE_TOKEN}
