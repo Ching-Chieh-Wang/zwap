@@ -23,6 +23,7 @@ pipeline {
             // This replaces the 'regexpFilter' block.
             // Text and expression are direct parameters.
             regexpFilterText: '$changed_files',
+            regexpFilterExpression: "(?s).*${env.JOB_NAME.split('/').last()}.*",
 
             printContributedVariables: false,
             printPostContent: false
