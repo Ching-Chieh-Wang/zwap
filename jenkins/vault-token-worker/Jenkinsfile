@@ -1,12 +1,7 @@
-import com.cloudbees.plugins.credentials.*
-import com.cloudbees.plugins.credentials.domains.*
-import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl
-import hudson.util.Secret
-
 pipeline {
     agent any
     parameters {
-        string(name: 'SERVICE_ROLE', description: 'Vault AppRole for target service')
+        string(name: 'SERVICE', description: 'Service request vault token for')
     }
     environment {
         VAULT_ADDR = 'http://linux-076:50006'
@@ -16,27 +11,59 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'jenkins-vault-token', variable: 'JENKINS_VAULT_TOKEN')]) {
                     script {
-                        // ... your Vault requests ...
+                        def roleResp = httpRequest(
+                            httpMode: 'GET',
+                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE_ROLE}-approle/role-id",
+                            customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
+                        )
+                        def roleId = readJSON text: roleResp.content
+                        roleId = roleId.data.role_id
+
+                        def secretResp = httpRequest(
+                            httpMode: 'POST',
+                            url: "${VAULT_ADDR}/v1/auth/approle/role/${params.SERVICE_ROLE}-approle/secret-id",
+                            customHeaders: [[name: 'X-Vault-Token', value: env.JENKINS_VAULT_TOKEN]]
+                        )
+                        def secretId = readJSON text: secretResp.content
+                        secretId = secretId.data.secret_id
+
+                        def loginResp = httpRequest(
+                            httpMode: 'POST',
+                            url: "${VAULT_ADDR}/v1/auth/approle/login",
+                            contentType: 'APPLICATION_JSON',
+                            requestBody: groovy.json.JsonOutput.toJson([role_id: roleId, secret_id: secretId])
+                        )
+                        def loginJson = readJSON text: loginResp.content
                         def token = loginJson.auth.client_token
 
-                        // Create/Update Jenkins credential
-                        def store = SystemCredentialsProvider.getInstance().getStore()
-                        def creds = new StringCredentialsImpl(
+                        // Dynamically save the token to Jenkins Credentials store
+                        import com.cloudbees.plugins.credentials.*
+                        import com.cloudbees.plugins.credentials.domains.*
+                        import org.jenkinsci.plugins.plaincredentials.impl.StringCredentialsImpl
+                        import hudson.util.Secret
+
+                        def creds_store = Jenkins.instance.getExtensionList('com.cloudbees.plugins.credentials.SystemCredentialsProvider')[0].getStore()
+                        def creds_domain = Domain.global()
+                        def credId = "VAULT-${params.SERVICE}-TOKEN"
+                        def description = "Vault token for ${params.SERVICE}"
+                        // Remove existing credential if it exists
+                        def toRemove = com.cloudbees.plugins.credentials.CredentialsProvider.lookupCredentials(
+                            StringCredentialsImpl.class,
+                            Jenkins.instance,
+                            null,
+                            null
+                        ).find { it.id == credId }
+                        if (toRemove) {
+                            creds_store.removeCredentials(creds_domain, toRemove)
+                        }
+                        def newCred = new StringCredentialsImpl(
                             CredentialsScope.GLOBAL,
-                            "dynamic-vault-token",   // credentialsId
-                            "Temporary Vault Token for ${params.SERVICE_ROLE}",
+                            credId,
+                            description,
                             Secret.fromString(token)
                         )
-
-                        // Remove old one if exists
-                        def existing = store.getCredentials(Domain.global()).find { it.id == "dynamic-vault-token" }
-                        if (existing) {
-                            store.updateCredentials(Domain.global(), existing, creds)
-                        } else {
-                            store.addCredentials(Domain.global(), creds)
-                        }
-
-                        echo "[Vault Worker] Updated Jenkins credential 'dynamic-vault-token'"
+                        creds_store.addCredentials(creds_domain, newCred)
+                        echo "[Vault Worker] Minted and stored token credential '${credId}' for ${params.SERVICE_ROLE}"
                     }
                 }
             }
