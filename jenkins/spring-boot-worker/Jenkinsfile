@@ -96,7 +96,9 @@ pipeline {
                                sh """
                                    ssh -o StrictHostKeyChecking=no ${host} \\
                                    'pkill -f "${service}.jar" || true; \\
-                                    nohup java -jar ~/zwap/${service}/${service}.jar > ~/zwap/${service}/app.log 2>&1 &
+                                    nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 & \\
+                                    echo \$! > ~/logs/${service}.pid; \\
+                                    echo "Started ${service} with PID \$(cat ~/logs/${service}.pid)"; \\
                                     disown'
                                """
                            }
