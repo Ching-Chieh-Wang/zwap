@@ -38,20 +38,11 @@ pipeline {
                 }
             }
 
-            stage('Read Deploy Config') {
-                steps {
-                    script {
-                        def deployConfig = readYaml(file: 'jenkins/deploy-config.yaml')
-                        env.DEPLOY_CONFIG = groovy.json.JsonOutput.toJson(deployConfig)
-                    }
-                }
-            }
-
-            stage('Sparse Clone') {
+            stage('Clone') {
                 steps {
                     script {
                         def service = env.JOB_NAME.split("/").last()
-                        echo "Building service: ${service}"
+                        echo "Cloning service: ${service}"
                         sh """
                             set -e
                             mkdir -p ~/zwap
@@ -69,19 +60,39 @@ pipeline {
                                 git reset --hard origin/main
                             fi
                         """
+                    }
+                }
+            }
 
-                        def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
+            stage('Read Deploy Config') {
+                steps {
+                    script {
+                        def deployConfig = readYaml(file: 'jenkins/deploy-config.yaml')
+                        env.DEPLOY_CONFIG = groovy.json.JsonOutput.toJson(deployConfig)
+                    }
+                }
+            }
 
-                        // Build the Spring Boot app
+            stage('Build') {
+                steps {
+                    script {
+                        def service = env.JOB_NAME.split("/").last()
+                        echo "Building service: ${service}"
                         sh "mvn clean package -DskipTests -f ${service}/pom.xml"
-
-                        // Ensure the target directory exists and move the jar
                         sh """
                             mkdir -p ~/zwap/${service}
                             mv ${service}/target/${service}*.jar ~/zwap/${service}/${service}.jar
                         """
+                    }
+                }
+            }
 
-                        // Deploy the artifact
+            stage('Deploy') {
+                steps {
+                    script {
+                        def service = env.JOB_NAME.split("/").last()
+                        def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
+
                         def server = deployConfig[service]?.server
                         def port = deployConfig[service]?.port
                         if (server && port) {
