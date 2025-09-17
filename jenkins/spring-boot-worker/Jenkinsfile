@@ -99,8 +99,8 @@ pipeline {
                                       pkill -f '${service}.jar' || true
                                       mkdir -p ~/logs
                                       nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
-                                      pid=\\\$!
-                                      echo 'Started ${service} with PID' \${pid}
+                                      echo \$! > {service}.pid
+                                      echo "[Connector Start] Connector started with PID \$(cat service.pid)"
                                     "
                                """
                            }
