@@ -105,6 +105,7 @@ pipeline {
                                        oldpid=\$(cat ~/pids/${service}.pid)
                                        kill -9 \$oldpid || true
                                        rm -f ~/pids/${service}.pid
+                                       rm -f ~/logs/${service}.log
                                      fi
 
                                      # Start new process
