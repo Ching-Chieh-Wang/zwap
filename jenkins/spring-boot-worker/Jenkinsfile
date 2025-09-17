@@ -79,10 +79,10 @@ pipeline {
                     script {
                         def service = env.JOB_NAME.split("/").last()
                         echo "Building service: ${service}"
-                        sh "mvn clean package -DskipTests -f ${service}/pom.xml"
+                        sh "mvn clean package -DskipTests -f ${env.HOME}/zwap/${service}/pom.xml"
                         sh """
-                            mkdir -p ~/zwap/${service}
-                            mv ${service}/target/${service}*.jar ~/zwap/${service}/${service}.jar
+                            mkdir -p ${env.HOME}/zwap/${service}
+                            mv ${env.HOME}/zwap/${service}/target/${service}*.jar ${env.HOME}/zwap/${service}/${service}.jar
                         """
                     }
                 }
@@ -98,10 +98,10 @@ pipeline {
                         def port = deployConfig[service]?.port
                         if (server && port) {
                             sshagent(credentials: ['ssh-deploy']) {
-                                sshCommand remote: [name: service, host: server, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: '''
+                                sshCommand remote: [name: service, host: server, port: port.toInteger(), user: 'jenkins', credentialsId: 'ssh-deploy'], command: """
                                     pkill -f "${service}.jar" || true
-                                    nohup java -jar ~/zwap/${service}/${service}.jar > ~/zwap/${service}/app.log 2>&1 &
-                                '''
+                                    nohup java -jar ${env.HOME}/zwap/${service}/${service}.jar > ${env.HOME}/zwap/${service}/app.log 2>&1 &
+                                """
                             }
                         } else {
                             echo "No deployment configuration found for service: ${service}"
