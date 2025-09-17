@@ -118,7 +118,7 @@ pipeline {
                                            fi
                                            echo '[DEBUG] Injecting ${vaultEnvVar}: \${VAULT_TOKEN:0:5}...'
                                            export ${vaultEnvVar}='\$VAULT_TOKEN'
-                                           VAULT_CONFIG_SERVICE_TOKEN=$VAULT_TOKEN nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
+                                           ${vaultEnvVar}=$VAULT_TOKEN nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
                                            pid=\\\$!
                                            echo \\\$pid > ~/pids/${service}.pid
                                            echo '[Deploy] Started ${service} with PID' \\\$pid"
