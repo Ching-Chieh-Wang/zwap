@@ -158,40 +158,28 @@ pipeline {
                         def host = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
                         if (host && port) {
-                            if (service == 'config-service') {
-                                sshagent(credentials: [SSH_KEY]) {
-                                    sh """
-                                        ssh -o StrictHostKeyChecking=no ${host} '
-                                          if [ -f ~/pids/${service}.pid ]; then
-                                            pid=\$(cat ~/pids/${service}.pid)
-                                            pid=\$(echo "\$pid" | tr -d '[:space:]')
-                                            if [ -z "\$pid" ]; then
-                                              echo "PID file is empty."
-                                              exit 1
-                                            fi
-                                            if ps -p \$pid > /dev/null; then
-                                              echo "Process \$pid is running."
-                                            else
-                                              echo "Process \$pid is not running."
-                                              exit 1
-                                            fi
-                                          else
-                                            echo "PID file does not exist."
-                                            exit 1
-                                          fi
-                                        '
-                                    """
-                                }
-                            } else {
-                                def normalizedService = service.toUpperCase().replace('-', '_')
-                                def vaultEnvVar = "VAULT_${normalizedService}_TOKEN"
-
-
-                               withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
-                                   sh """
-                                       curl -f http://${host}:${port}/actuator/health
-                                   """
-                               }
+                            sshagent(credentials: [SSH_KEY]) {
+                                sh """
+                                    ssh -o StrictHostKeyChecking=no ${host} '
+                                      if [ -f ~/pids/${service}.pid ]; then
+                                        pid=\$(cat ~/pids/${service}.pid)
+                                        pid=\$(echo "\$pid" | tr -d '[:space:]')
+                                        if [ -z "\$pid" ]; then
+                                          echo "PID file is empty."
+                                          exit 1
+                                        fi
+                                        if ps -p \$pid > /dev/null; then
+                                          echo "Process \$pid is running."
+                                        else
+                                          echo "Process \$pid is not running."
+                                          exit 1
+                                        fi
+                                      else
+                                        echo "PID file does not exist."
+                                        exit 1
+                                      fi
+                                    '
+                                """
                             }
                         } else {
                             error("No deployment configuration found for service: ${service}")
