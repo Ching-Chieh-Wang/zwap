@@ -119,27 +119,27 @@ pipeline {
 
                             withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
                                 sshagent(credentials: [SSH_KEY]) {
-                                    sh '''
-                                      ssh -o StrictHostKeyChecking=no ${host} '
-                                        set -e
-                                        mkdir -p ~/logs ~/pids
-                                        if [ -f ~/pids/${service}.pid ]; then
-                                          oldpid=$(cat ~/pids/${service}.pid | tr -d "[:space:]")
-                                          if [ -n "$oldpid" ]; then
-                                            kill -9 $oldpid || true
-                                          fi
-                                          rm -f ~/pids/${service}.pid
-                                          rm -f ~/logs/${service}.log
-                                        fi
-                                        echo "[DEBUG] Injecting VAULT_${normalizedService}_TOKEN..."
-                                        export VAULT_${normalizedService}_TOKEN=$VAULT_TOKEN
-                                        echo "[DEBUG] Token prefix: \${VAULT_TOKEN:0:5}..."
-                                        nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
-                                        pid=$!
-                                        echo $pid > ~/pids/${service}.pid
-                                        echo "[Deploy] Started ${service} with PID $pid"
-                                      '
-                                    '''
+                                   sh """
+                                     ssh -o StrictHostKeyChecking=no ${host} '
+                                       set -e
+                                       mkdir -p ~/logs ~/pids
+                                       if [ -f ~/pids/${service}.pid ]; then
+                                         oldpid=\$(cat ~/pids/${service}.pid | tr -d "[:space:]")
+                                         if [ -n "\$oldpid" ]; then
+                                           kill -9 \$oldpid || true
+                                         fi
+                                         rm -f ~/pids/${service}.pid
+                                         rm -f ~/logs/${service}.log
+                                       fi
+                                       echo "[DEBUG] Injecting VAULT_${normalizedService}_TOKEN..."
+                                       export VAULT_${normalizedService}_TOKEN=$VAULT_TOKEN
+                                       echo "[DEBUG] Token prefix: \${VAULT_TOKEN:0:5}..."
+                                       nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
+                                       pid=\$!
+                                       echo \$pid > ~/pids/${service}.pid
+                                       echo "[Deploy] Started ${service} with PID \$pid"
+                                     '
+                                   """
                                 }
                             }
                         } else {
