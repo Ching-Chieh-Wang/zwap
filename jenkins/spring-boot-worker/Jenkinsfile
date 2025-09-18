@@ -143,16 +143,37 @@ pipeline {
                         def host = deployConfig[service]?.host
                         def port = deployConfig[service]?.port
                         if (host && port) {
-                            def normalizedService = service.toUpperCase().replace('-', '_')
-                            def vaultEnvVar = "VAULT_${normalizedService}_TOKEN"
+                            if (service == 'config-service') {
+                                sshagent(credentials: [SSH_KEY]) {
+                                    sh """
+                                        ssh -o StrictHostKeyChecking=no ${host} '
+                                          if [ -f ~/pids/${service}.pid ]; then
+                                            pid=\$(cat ~/pids/${service}.pid)
+                                            if ps -p \$pid > /dev/null; then
+                                              echo "Process \$pid is running."
+                                            else
+                                              echo "Process \$pid is not running."
+                                              exit 1
+                                            fi
+                                          else
+                                            echo "PID file does not exist."
+                                            exit 1
+                                          fi
+                                        '
+                                    """
+                                }
+                            } else {
+                                def normalizedService = service.toUpperCase().replace('-', '_')
+                                def vaultEnvVar = "VAULT_${normalizedService}_TOKEN"
 
 
-                           withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
-                               sh """
-                                   sleep 15
-                                   curl -f -H "X-Config-Token: ${VAULT_TOKEN}" http://${host}:${port}/actuator/health
-                               """
-                           }
+                               withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
+                                   sh """
+                                       sleep 15
+                                       curl -f http://${host}:${port}/actuator/health
+                                   """
+                               }
+                            }
                         } else {
                             error("No deployment configuration found for service: ${service}")
                         }
