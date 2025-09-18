@@ -34,28 +34,11 @@
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
-            <version>1.18.32</version>
+            <version>1.18.38</version>
             <artifactId>lombok</artifactId>
         </dependency>
     </dependencies>
 
 
-    <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
