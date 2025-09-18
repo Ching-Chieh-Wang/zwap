@@ -7,7 +7,6 @@
 		<artifactId>zwap</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<groupId>com.zwap</groupId>
 	<artifactId>api-gateway-service</artifactId>
 
 	<dependencies>
@@ -29,7 +28,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-circuitbreaker-resilience4j</artifactId>
+			<artifactId>spring-cloud-starter-circuitbreaker-reactor-resilience4j</artifactId>
 		</dependency>
 	</dependencies>
 </project>
