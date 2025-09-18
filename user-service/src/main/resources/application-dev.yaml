@@ -2,7 +2,7 @@ spring:
   application:
     name: user-service
   config:
-    import: configserver:http://linux-075:50013
+    import: configserver:http://localhost:50013
   cloud:
     config:
       token: ${VAULT_USER_SERVICE_TOKEN}
