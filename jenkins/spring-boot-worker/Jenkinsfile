@@ -63,17 +63,10 @@ pipeline {
             stage('Annotate Build') {
                 steps {
                     script {
-                        // Shorten commit hash if available
                         def commitHash = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : "unknown"
                         def branchName = env.GIT_BRANCH ?: "unknown"
+                        def commitMsg = env.commit_msg ?: "No commit message from webhook"
 
-                        // For GitHub webhook, you can also get commit message from payload
-                        def commitMsg = sh(
-                            script: "git log -1 --pretty=%B",
-                            returnStdout: true
-                        ).trim()
-
-                        // Annotate build in Jenkins UI
                         currentBuild.displayName = "#${env.BUILD_NUMBER} - ${commitHash} (${branchName})"
                         currentBuild.description = commitMsg
                     }
