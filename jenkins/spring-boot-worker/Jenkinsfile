@@ -106,7 +106,7 @@ pipeline {
                     script {
                         def service = env.JOB_NAME.split("/").last()
                         echo "Building service: ${service}"
-                        sh "cd ${env.HOME}/zwap && mvn clean package spring-boot:repackage -pl ${service} -am -DskipTests"
+                        sh "cd ${env.HOME}/zwap && ./mvnw clean package spring-boot:repackage -pl ${service} -am -DskipTests"
                         sh """
                             mkdir -p ${env.HOME}/zwap/${service}
                             mv ${env.HOME}/zwap/${service}/target/${service}-*.jar ${env.HOME}/zwap/${service}/${service}.jar
