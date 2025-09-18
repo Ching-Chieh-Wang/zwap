@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        disableConcurrentBuilds()
+    }
+
     environment {
         SSH_KEY = 'linux-server'
         REPO_URL = 'https://github.com/Ching-Chieh-Wang/zwap.git'
@@ -28,8 +32,8 @@ pipeline {
 
             // This replaces the 'regexpFilter' block.
             // Text and expression are direct parameters.
-            regexpFilterText: '$changed_files',
-            regexpFilterExpression: "(?s).*${env.JOB_NAME.split('/').last()}.*",
+            regexpFilterText: '$ref',
+            regexpFilterExpression: 'refs/heads/main',
 
             printContributedVariables: false,
             printPostContent: false
