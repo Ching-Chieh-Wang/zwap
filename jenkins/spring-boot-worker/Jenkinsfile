@@ -106,7 +106,7 @@ pipeline {
 
                              withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
                                  sshagent(credentials: [SSH_KEY]) {
-                                     sh """
+                                     sh '''
                                          ssh -o StrictHostKeyChecking=no ${host} \\
                                            "set -e
                                             mkdir -p ~/logs ~/pids
@@ -124,7 +124,7 @@ pipeline {
                                             echo \\\$pid > ~/pids/${service}.pid
                                             echo '[Deploy] Started ${service} with PID' \\\$pid
                                            "
-                                     """
+                                     '''
                                  }
                              }
                         } else {
@@ -148,10 +148,10 @@ pipeline {
 
 
                             withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
-                                sh """
+                                sh '''
                                     sleep 15
                                     curl -f -H "X-Config-Token: ${VAULT_TOKEN}" http://${host}:${port}/actuator/health
-                                """
+                                '''
                             }
                         } else {
                             error("No deployment configuration found for service: ${service}")
