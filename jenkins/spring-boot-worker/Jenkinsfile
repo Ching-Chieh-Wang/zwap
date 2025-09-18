@@ -18,7 +18,7 @@ pipeline {
                     key: 'changed_files',
                     value: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]',
                     expressionType: 'JSONPath'
-                ]
+                ],
                 [
                     key: 'commit_msg',
                     value: '$.commits[0].message',
