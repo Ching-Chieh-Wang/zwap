@@ -19,6 +19,11 @@ pipeline {
                     value: '$.commits[*].[\'modified\',\'added\',\'removed\'][*]',
                     expressionType: 'JSONPath'
                 ]
+                [
+                    key: 'commit_msg',
+                    value: '$.commits[0].message',
+                    expressionType: 'JSONPath'
+                ]
             ],
 
             // This replaces the 'regexpFilter' block.
