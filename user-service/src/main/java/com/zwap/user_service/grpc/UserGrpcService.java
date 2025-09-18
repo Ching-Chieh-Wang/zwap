@@ -25,7 +25,7 @@ public class UserGrpcService extends UserServiceGrpc.UserServiceImplBase {
             UserVO uservo = userService.getById(request.getId());
 
             GetUserByIdResponse response = GetUserByIdResponse.newBuilder()
-                    .setDisplayName(uservo.getName())
+                    .setName(uservo.getName())
                     .setPhotoUrl(uservo.getPhotoUrl() != null ? uservo.getPhotoUrl() : "")
                     .build();
 
