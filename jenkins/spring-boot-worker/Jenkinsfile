@@ -147,12 +147,12 @@ pipeline {
                             def vaultEnvVar = "VAULT_${normalizedService}_TOKEN"
 
 
-                            withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
-                                sh '''
-                                    sleep 15
-                                    curl -f -H "X-Config-Token: $VAULT_TOKEN" http://'"${host}:${port}"'/actuator/health
-                                '''
-                            }
+                           withCredentials([string(credentialsId: vaultEnvVar, variable: 'VAULT_TOKEN')]) {
+                               sh """
+                                   sleep 15
+                                   curl -f -H "X-Config-Token: ${VAULT_TOKEN}" http://${host}:${port}/actuator/health
+                               """
+                           }
                         } else {
                             error("No deployment configuration found for service: ${service}")
                         }
