@@ -52,17 +52,19 @@ pipeline {
             stage('Clone') {
                 steps {
                     script {
-                        echo "Cloning repo"
+                        echo "Cloning repo including submodules"
                         sh """
                             set -e
 
                             if [ ! -d "${HOME}/zwap/.git" ]; then
                                 rm -rf ${HOME}/zwap
-                                git clone --branch main ${REPO_URL} ${HOME}/zwap
+                                git clone --branch main --recurse-submodules ${REPO_URL} ${HOME}/zwap
                             else
                                 cd ${HOME}/zwap
                                 git fetch origin
                                 git reset --hard origin/main
+                                git submodule sync --recursive
+                                git submodule update --init --recursive
                             fi
                         """
                     }
