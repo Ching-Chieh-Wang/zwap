@@ -16,7 +16,6 @@ pipeline {
     triggers {
         GenericTrigger(
             token: 'xiuxiulovejingjie',
-
             genericVariables: [
                 [
                     key: 'changed_files',
@@ -29,16 +28,10 @@ pipeline {
                     expressionType: 'JSONPath'
                 ]
             ],
-
-            // This replaces the 'regexpFilter' block.
-            // Text and expression are direct parameters.
-            regexpFilterText: '$ref',
-            regexpFilterExpression: 'refs/heads/main',
-
-            printContributedVariables: false,
+            regexpFilterText: '$changed_files',
+            regexpFilterExpression: ".*${env.JOB_BASE_NAME}.*",
+            printContributedVariables: true,
             printPostContent: false
-
-
         )
     }
 
