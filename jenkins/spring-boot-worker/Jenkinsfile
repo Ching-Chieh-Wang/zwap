@@ -104,12 +104,13 @@ pipeline {
             stage('Build') {
                 steps {
                     script {
-                        def service = env.JOB_NAME.split("/").last()
+                        def servicePath = env.JOB_NAME
+                        def service = servicePath.split("/").last()
                         echo "Building service: ${service}"
-                        sh "cd ${env.HOME}/zwap && ./mvnw clean package spring-boot:repackage -pl ${service} -am -DskipTests"
+                        sh "cd ${env.HOME}/zwap && ./mvnw clean package spring-boot:repackage -pl ${servicePath} -am -DskipTests"
                         sh """
-                            mkdir -p ${env.HOME}/zwap/${service}
-                            mv ${env.HOME}/zwap/${service}/target/${service}-*.jar ${env.HOME}/zwap/${service}/${service}.jar
+                            mkdir -p ${env.HOME}/zwap/${servicePath}
+                            mv ${env.HOME}/zwap/${servicePath}/target/${service}-*.jar ${env.HOME}/zwap/${servicePath}/${service}.jar
                         """
                     }
                 }
@@ -118,7 +119,8 @@ pipeline {
             stage('Deploy') {
                 steps {
                     script {
-                        def service = env.JOB_NAME.split("/").last()
+                        def servicePath = env.JOB_NAME
+                        def service = servicePath.split("/").last()
                         def deployConfig = new groovy.json.JsonSlurperClassic().parseText(env.DEPLOY_CONFIG)
 
                         def host = deployConfig[service]?.host
@@ -143,7 +145,7 @@ pipeline {
                                          rm -f ~/logs/${service}.log
                                        fi
                                        export VAULT_${normalizedService}_TOKEN=$VAULT_TOKEN
-                                       nohup java -jar ~/zwap/${service}/${service}.jar > ~/logs/${service}.log 2>&1 &
+                                       nohup java -jar ~/zwap/${servicePath}/${service}.jar > ~/logs/${service}.log 2>&1 &
                                        pid=\$!
                                        echo \$pid > ~/pids/${service}.pid
                                        echo "[Deploy] Started ${service} with PID \$pid"
