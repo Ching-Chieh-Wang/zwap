@@ -3,7 +3,7 @@ spring:
     name: product-read-service
   config:
     import:
-      configserver:${CONFIG_SERVICE_URI}
+      configserver:http://linux-075:50013
   cloud:
     config:
       token: ${VAULT_PRODUCT_READ_SERVICE_TOKEN}

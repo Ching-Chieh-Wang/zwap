@@ -6,4 +6,3 @@ spring:
   cloud:
     config:
       token: ${VAULT_USER_SERVICE_TOKEN}
-      fail-fast: true

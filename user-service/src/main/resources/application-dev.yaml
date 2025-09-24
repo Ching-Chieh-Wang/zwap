@@ -1,9 +1,0 @@
-spring:
-  application:
-    name: user-service
-  config:
-    import: configserver:http://localhost:50013
-  cloud:
-    config:
-      token: ${VAULT_USER_SERVICE_TOKEN}
-      fail-fast: true
