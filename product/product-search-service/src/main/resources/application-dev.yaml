@@ -3,7 +3,7 @@ spring:
     name: product-search-service
   config:
     import:
-      configserver:http://linux-075:50013
+      configserver:http://localhost:50013
   cloud:
     config:
       token: ${VAULT_PRODUCT_SEARCH_SERVICE_TOKEN}
