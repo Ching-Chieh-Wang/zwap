@@ -66,7 +66,6 @@ func main() {
 			}
 
 			for i, doc := range batch {
-				fmt.Println("key", doc.Key)
 				doc.Product.Embedding = embeddings[i]
 				kafkaio.Publish(producer, PRODUCER_PUBLISH_TOPIC, doc.Key, doc.Product)
 			}
