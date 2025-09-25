@@ -1,7 +1,4 @@
 
-[submodule "zwap-proto-repo"]
-	path = zwap-proto-repo
-	url = https://github.com/Ching-Chieh-Wang/zwap-proto-repo.git
 [submodule "zwap-config-repo"]
 	path = zwap-config-repo
 	url = https://github.com/Ching-Chieh-Wang/zwap-config-repo.git
